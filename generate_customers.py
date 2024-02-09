@@ -7,7 +7,7 @@ from random import randint
 from tqdm import tqdm
 from typing import List, Tuple, Dict, Any
 
-from sample_generator import SampleGenerator
+from sample_generator import SampleGenerator, SampleSolver
 from customer_sample_format import customer_json_format
 
 from langchain_core.prompts import PromptTemplate
@@ -115,7 +115,14 @@ def get_chain_extract_information(variables: List[str]):
     model = ChatOpenAI()
     json_output_parser = JsonOutputParser()
 
-    chain = prompt | model | json_output_parser
+    customer_solver = SampleSolver(customer_json_format)
+
+    chain = (
+        prompt
+        | model
+        | json_output_parser
+        | customer_solver.get_deterministic_choice_from_sample
+    )
 
     return chain
 
@@ -147,12 +154,7 @@ def get_inference_extract_information(
 
     customer_json = {variable: customer[variable][0] for variable in variables}
 
-    customer_information = chain.invoke(customer_json)
-
-    deterministic_choice = customer_sample_generator.get_true_choice_from_sampe(
-        customer_information
-    )
-    deterministic_choice_id = choices.index(deterministic_choice) + 1
+    deterministic_choice_id = chain.invoke(customer_json)
 
     return customer_json, choice_id, deterministic_choice_id
 

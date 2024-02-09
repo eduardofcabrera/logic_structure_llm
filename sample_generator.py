@@ -1,5 +1,71 @@
+import itertools
+
 from random import randint, choice
 from typing import List, Any, Tuple, Dict
+
+
+class SampleSolver:
+    def __init__(self, sample_json_format: Dict):
+        self.sample_json_format = sample_json_format
+        self.variables = [
+            variable for variable in sample_json_format["variables"].keys()
+        ]
+        self.possible_choices = list(
+            itertools.product([0, 1], repeat=len(self.variables))
+        )
+
+    def _get_category_from_int_variable(
+        self, delimiter: int, variable_value: int, **kwargs
+    ) -> int:
+        if variable_value > delimiter:
+            return 1
+        return 0
+
+    def _get_category_from_binary_option_variable(
+        self,
+        options: Tuple[Any, Any],
+        variable_value: Any,
+        **kwargs,
+    ) -> int:
+        return options.index(variable_value)
+
+    def _get_category_from_binary_group_variable(
+        self, groups: Tuple[List[Any], List[Any]], variable_value: Any, **kwargs
+    ) -> int:
+        if variable_value in groups[0]:
+            return 0
+        return 1
+
+    def _get_category_from_variable(
+        self, variable_config: Dict, variable_value: Any
+    ) -> int:
+        if variable_config["type"] == "int_variable":
+            return self._get_category_from_int_variable(
+                variable_value=variable_value, **variable_config
+            )
+        elif variable_config["type"] == "binary_option_variable":
+            return self._get_category_from_binary_option_variable(
+                variable_value=variable_value, **variable_config
+            )
+        elif variable_config["type"] == "binary_group_variable":
+            return self._get_category_from_binary_group_variable(
+                variable_value=variable_value, **variable_config
+            )
+        return 0
+
+    def get_deterministic_choice_from_sample(self, sample: Dict) -> int:
+
+        choice = tuple(
+            [
+                self._get_category_from_variable(
+                    variable_config=self.sample_json_format["variables"][variable_name],
+                    variable_value=variable_value,
+                )
+                for variable_name, variable_value in sample.items()
+            ]
+        )
+        choice_id = self.possible_choices.index(choice) + 1
+        return choice_id
 
 
 class SampleGenerator:
@@ -92,7 +158,7 @@ class SampleGenerator:
             )
         return 0
 
-    def get_true_choice_from_sampe(self, sample: Dict) -> Tuple:
+    def get_true_choice_from_sample(self, sample: Dict) -> Tuple:
 
         choice = tuple(
             [
