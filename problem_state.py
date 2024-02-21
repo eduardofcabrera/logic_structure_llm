@@ -175,8 +175,8 @@ class ProblemState:
 
 
 def main():
-    domain = parse_domain("data/pddl/pddlgenerators/blocksworld/4ops/domain.pddl")
-    problem = parse_problem("data/pddl/instances/blocksworld/generated/instance-1.pddl")
+    domain = parse_domain("data/pddlgenerators/blocksworld/4ops/domain.pddl")
+    problem = parse_problem("data/instances/blocksworld/generated/instance-1.pddl")
 
     problem_state = ProblemState(domain, problem)
 
