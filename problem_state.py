@@ -3,8 +3,6 @@ import pddl.logic.predicates as pddl_predicates
 import pddl.logic.terms as pddl_terms
 import pddl.action as pddl_action
 
-from pddl import parse_domain, parse_problem
-
 from itertools import product
 from copy import deepcopy
 
@@ -172,20 +170,3 @@ class ProblemState:
         self.add_state_predicate_list(new_state_predicate_list)
 
         return True
-
-
-def main():
-    domain = parse_domain("data/pddlgenerators/blocksworld/4ops/domain.pddl")
-    problem = parse_problem("data/instances/blocksworld/generated/instance-1.pddl")
-
-    problem_state = ProblemState(domain, problem)
-
-    problem_state.goal_reached()
-
-    possible_actions = problem_state.get_all_possible_actions()
-
-    print(possible_actions)
-
-
-if __name__ == "__main__":
-    main()

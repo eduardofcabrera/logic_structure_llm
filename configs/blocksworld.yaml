@@ -49,10 +49,20 @@ domain_intro_cost: |
    Once I put down or stack a block, my hand becomes empty.
    Once you stack a block on top of a second block, the second block is no longer clear.
 
+prompts:
+   feedback_prompts:
+         positive: "Good action! "
+         negative: "This action is not possible due to the set of restrictions. "
+   order_prompts: 
+         positive: "Return the next action to achieve my goal. Return one, and only one, action, without nothing more.\n"
+         negative: "Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.\n"
+         first_prompt: "Return the first action I need to take to achieve my goal. Return one, and only one, action, without nothing more.\n"
+         only_prompt: "\n Return only the sequence of actions as the example above, nothing more.\n"
+   remove_string: "My plan is as follows:\n\n[PLAN]"
 
 actions:
-  {pick-up: "pick up the {}",
-   put-down: "put down the {}",
+  {pickup: "pick up the {}",
+   putdown: "put down the {}",
    stack: "stack the {} on top of the {}",
    unstack: "unstack the {} from on top of the {}"}
 
