@@ -6,6 +6,7 @@ import yaml
 import re
 import json
 
+from pathlib import Path
 from tqdm import tqdm
 
 from langchain_core.prompts import (
@@ -23,15 +24,37 @@ from langchain.chat_models.base import BaseChatModel
 class Blocksworld:
     def __init__(
         self,
-        problem_state: ProblemState,
         config: dict,
-        instance_prompt: dict,
         model: BaseChatModel,
     ):
-        self.problem_state = problem_state
         self.config = config
-        self.instance_prompt = instance_prompt
+        self.problem_state = self.create_problem_state()
+        self.instance_prompt = self.get_instance_prompt()
         self.model = model
+
+    def create_problem_state(self):
+
+        domain_file = Path(self.config["domain_file"])
+        instance_file = Path(self.config["instance_dir"]) / self.config[
+            "instances_template"
+        ].format(self.config["instance_id"])
+
+        domain = parse_domain(domain_file)
+        problem = parse_problem(instance_file)
+
+        return ProblemState(domain=domain, problem=problem)
+
+    def get_instance_prompt(self):
+
+        with open(self.config["prompt_json_file"]) as f:
+            instance_prompt = json.load(f)["instances"][self.config["instance_id"] - 2]
+            f.close()
+
+        return instance_prompt
+
+    def reboot_problem_state(self):
+
+        self.problem_state = self.create_problem_state()
 
     def text_to_action(self, text: str) -> tuple:
         actions_text_mapping = self.config["actions"]
@@ -75,8 +98,8 @@ class Blocksworld:
 
         action = self.text_to_action(text)
         if not action:
-            return False
-        return self.problem_state.take_action(*action)
+            return (False, False)
+        return (self.problem_state.take_action(*action), True)
 
     def current_state_to_text(self):
         current_state_predicate_list = self.problem_state.current_state_predicate_list
@@ -100,9 +123,18 @@ class Blocksworld:
 
         remove_string = self.config["prompts"]["remove_string"]
         len_remove_string = len(remove_string)
-        query = self.instance_prompt["query"][:-len_remove_string]
+        query = self.instance_prompt["query"].split("[STATEMENT]")[-1][
+            :-len_remove_string
+        ]
 
-        first_prompt = query + self.config["prompts"]["order_prompts"]["first_prompt"]
+        first_prompt = (
+            self.config["domain_intro"]
+            + self.config["one_shot_chat"]
+            + self.config["one_shot_chat_2"]
+            + "\n[STATEMENT]"
+            + query
+            + self.config["prompts"]["order_prompts"]["first_prompt"]
+        )
 
         return first_prompt
 
@@ -124,9 +156,16 @@ class Blocksworld:
         model_return = chain.invoke({"input": _input})
 
         actions = model_return.split("\n")
-        actions = {action: self.take_action_from_text(action) for action in actions}
+        actions = {
+            f"{i}": (action, self.take_action_from_text(action)[0])
+            for i, action in enumerate(actions)
+        }
 
-        return self.problem_state.goal_reached(), _input + model_return, actions
+        goal_reached = self.problem_state.goal_reached()
+
+        self.reboot_problem_state()
+
+        return goal_reached, _input + model_return, actions
 
     def get_action_return_prompt(
         self, action_return: bool, with_current_state_prompt: bool = False
@@ -173,6 +212,7 @@ class Blocksworld:
         chat_chain = self.get_chat_chain()
 
         chat_history = []
+        actions = []
 
         first_prompt_text = self.get_first_prompt()
 
@@ -180,14 +220,17 @@ class Blocksworld:
             first_prompt_text, chat_history, chat_chain
         )
 
-        max_iter = 10
+        for _ in range(self.config["max_iterations"]):
 
-        for _ in range(max_iter):
-
-            action_return = self.take_action_from_text(model_return)
+            action_return, is_action = self.take_action_from_text(model_return)
             prompt_text = self.get_action_return_prompt(
                 action_return, with_current_state_prompt
             )
+
+            if not (is_action):
+                break
+
+            actions.append((model_return, action_return))
 
             if self.problem_state.goal_reached():
                 break
@@ -196,9 +239,14 @@ class Blocksworld:
                 prompt_text, chat_history, chat_chain
             )
 
+        actions = {f"{i}": action for i, action in enumerate(actions)}
         chat_text = self.get_chat_content_from_chat_history(chat_history)
 
-        return self.problem_state.goal_reached(), chat_text
+        goal_reached = self.problem_state.goal_reached()
+
+        self.reboot_problem_state()
+
+        return goal_reached, chat_text, actions
 
 
 def main(instance_id: int):

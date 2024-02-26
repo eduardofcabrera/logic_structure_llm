@@ -1,0 +1,4 @@
+task_config: configs/blocksworld.yaml
+instance_id: 3
+max_iterations: 15
+model: gpt-4-0125-preview

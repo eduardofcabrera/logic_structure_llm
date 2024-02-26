@@ -1,0 +1,31 @@
+[STATEMENT]
+As initial conditions I have that, the blue block is clear, the orange block is clear, the hand is empty, the blue block is on top of the red block, the red block is on the table and the orange block is on the table.
+My goal is to have that the red block is on top of the blue block and the orange block is on top of the red block.
+
+Return the first action I need to take to achieve my goal. Return one, and only one, action, without nothing more.
+
+pick up the orange block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+put down the orange block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+pick up the blue block
+human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
+
+unstack the blue block from on top of the red block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+put down the blue block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+pick up the red block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+stack the red block on top of the blue block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+pick up the orange block
+human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+
+stack the orange block on top of the red block
