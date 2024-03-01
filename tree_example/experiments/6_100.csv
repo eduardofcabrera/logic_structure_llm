@@ -1,0 +1,101 @@
+age,sex,height,weight,registration_time,city,correct_choice_id,inference_choice_id
+68,male,188,45,2,Washington,8,31
+73,male,185,65,11,Boston,4,5
+36,male,174,79,2,New York,36,37
+42,female,148,91,10,New York,60,36
+52,female,210,89,17,San Francisco,17,20
+53,female,181,43,18,Los Angeles,21,14
+47,male,153,34,22,Boston,14,30
+56,male,192,56,5,San Diego,7,12
+29,male,187,45,24,Los Angeles,37,14
+55,male,195,100,14,San Diego,1,3
+62,female,200,93,10,Washington,20,64
+62,female,169,21,16,San Francisco,29,17
+57,male,174,85,20,Washington,2,43
+33,male,209,89,19,San Diego,33,32
+77,female,142,69,1,Boston,28,32
+29,male,187,64,24,San Diego,33,36
+56,female,142,71,21,Los Angeles,25,36
+18,female,199,61,22,San Francisco,49,51
+31,male,203,28,15,San Diego,37,45
+25,male,198,68,0,San Francisco,35,42
+78,female,149,92,18,Washington,26,1
+16,female,149,86,18,San Francisco,57,49
+20,female,178,66,2,New York,52,37
+58,female,171,98,3,San Francisco,19,19
+50,female,141,73,5,Los Angeles,27,9
+71,male,181,100,14,San Diego,1,30
+58,female,181,86,16,Los Angeles,17,47
+44,female,173,93,13,New York,50,59
+65,male,145,24,14,San Francisco,13,57
+46,female,169,33,3,New York,32,56
+72,female,204,51,5,Los Angeles,23,61
+65,female,171,49,17,Los Angeles,21,32
+70,female,197,69,0,Los Angeles,19,61
+71,female,157,97,18,San Diego,25,9
+68,male,187,90,4,Los Angeles,3,12
+10,male,201,21,15,Boston,38,34
+38,female,140,34,4,New York,64,31
+68,male,196,94,9,Washington,4,37
+14,female,138,51,16,Los Angeles,61,45
+37,female,181,76,0,San Francisco,51,54
+80,male,184,43,21,Washington,6,49
+15,male,190,62,20,Los Angeles,33,25
+74,female,181,97,7,Boston,20,51
+61,female,169,45,20,Boston,30,39
+54,male,154,66,4,Washington,12,5
+27,male,135,32,4,Los Angeles,47,64
+47,female,186,64,17,San Francisco,17,35
+53,male,208,86,21,Los Angeles,1,40
+50,female,186,61,18,Washington,18,48
+16,male,130,39,20,Boston,46,12
+54,male,163,46,17,Boston,14,25
+12,male,198,59,22,San Diego,37,41
+79,female,199,89,5,Boston,20,3
+61,male,210,65,1,San Francisco,3,46
+15,male,169,77,19,New York,42,18
+59,female,169,80,20,San Francisco,25,32
+56,male,154,44,2,New York,16,45
+54,female,169,88,9,Los Angeles,27,43
+34,male,149,58,7,Los Angeles,47,43
+63,female,176,62,7,Washington,20,35
+50,male,165,34,18,Washington,14,41
+66,male,187,70,8,Washington,4,25
+41,female,157,72,6,San Francisco,59,61
+66,female,203,93,10,Boston,20,15
+40,female,135,96,21,Washington,58,63
+19,female,152,80,16,Los Angeles,57,63
+80,male,178,57,21,San Francisco,5,54
+59,female,137,100,14,Boston,26,49
+79,female,175,58,16,San Francisco,21,59
+11,male,183,46,19,San Diego,37,46
+57,female,202,33,23,Los Angeles,21,63
+75,male,171,45,15,Boston,6,47
+69,female,150,46,4,Los Angeles,31,63
+57,male,164,49,3,San Francisco,15,27
+54,male,210,34,6,San Francisco,7,46
+14,female,209,41,18,Washington,54,55
+54,male,138,21,4,San Diego,15,23
+42,male,191,24,22,San Francisco,37,41
+29,male,136,76,2,San Diego,43,34
+41,female,147,27,0,Boston,64,55
+18,male,180,61,9,San Francisco,35,19
+61,male,131,73,18,San Diego,9,13
+58,female,146,52,14,Boston,30,15
+37,male,208,21,15,San Francisco,37,38
+10,male,162,37,9,San Diego,47,30
+41,female,131,43,23,San Diego,61,56
+36,female,161,70,9,San Diego,59,32
+34,female,133,94,11,Washington,60,55
+13,male,196,24,18,New York,38,24
+17,female,202,44,7,Los Angeles,55,32
+40,female,192,36,14,Los Angeles,53,57
+39,female,130,57,13,San Francisco,61,42
+80,female,204,28,4,San Diego,23,33
+30,male,166,39,15,Washington,46,32
+48,female,188,65,5,New York,20,19
+38,male,150,37,14,San Diego,45,36
+34,female,139,30,11,Los Angeles,63,63
+49,male,157,92,19,Washington,10,44
+79,male,172,68,11,New York,4,22
+55,male,146,27,14,San Diego,13,41

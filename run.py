@@ -4,7 +4,12 @@ import json
 
 from tqdm import tqdm
 
-from blocksworld import Blocksworld
+from blocksworld import (
+    Blocksworld,
+    BlocksworldChat,
+    BlocksworldOnlyPrompt,
+    BlocksworldChatWithPossibleActions,
+)
 
 from langchain_openai import ChatOpenAI
 
@@ -21,12 +26,22 @@ def main(config_run: dict):
 
     model = ChatOpenAI(model=config_run["model"])
 
-    blocksworld_run = Blocksworld(config=task_config, model=model)
+    blocksworld_chat_with_possible_actions = BlocksworldChatWithPossibleActions(
+        config=task_config, model=model
+    )
 
-    returns_chat = blocksworld_run.start_chat()
-    returns_only_prompt = blocksworld_run.start_chat_only_prompt()
+    possible_actions = (
+        blocksworld_chat_with_possible_actions.problem_state.get_all_possible_actions()
+    )
+    return_ = blocksworld_chat_with_possible_actions.start_inference()
 
-    return (returns_only_prompt, returns_chat)
+    # blocksworld_chat = BlocksworldChat(config=task_config, model=model)
+    # blocksworld_only_prompt = BlocksworldOnlyPrompt(config=task_config, model=model)
+
+    # returns_chat = blocksworld_chat.start_inference()
+    # returns_only_prompt = blocksworld_only_prompt.start_inference()
+
+    return tuple(return_)
 
 
 def parse_args():
@@ -53,19 +68,14 @@ if __name__ == "__main__":
 
     json_out = {
         i: {
-            "only_prompt": {
-                "goal_achieved": _return[0][0],
-                "content": _return[0][1],
-                "actions": _return[0][2],
-            },
-            "chat": {
-                "goal_achieved": _return[1][0],
-                "content": _return[1][1],
-                "actions": _return[1][2],
+            "chat_with_possible_actions": {
+                "goal_achieved": _return[0],
+                "content": _return[1],
+                "actions": _return[2],
             },
         }
         for i, _return in enumerate(returns)
     }
 
-    with open("json_out_3_1.json", "w") as f:
+    with open("json_out_3_1_1_1_1   .json", "w") as f:
         json.dump(json_out, f)

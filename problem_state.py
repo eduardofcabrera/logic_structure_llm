@@ -2,15 +2,17 @@ import pddl.logic.base as pddl_logic
 import pddl.logic.predicates as pddl_predicates
 import pddl.logic.terms as pddl_terms
 import pddl.action as pddl_action
-
-from itertools import product
-from copy import deepcopy
+import pddl.core as pddl_core
 
 import pddl_prover
 
+from typing import *
+from itertools import product
+from copy import deepcopy
+
 
 class ProblemState:
-    def __init__(self, domain, problem):
+    def __init__(self, domain: pddl_core.Domain, problem: pddl_core.Problem):
         self.domain = domain
         self.problem = problem
 
@@ -18,49 +20,61 @@ class ProblemState:
         self.predicate_mapping = self._get_predicate_mapping()
 
         self.list_state_predicate_list = [list(problem.init)]
+        self.actions_taken = []
 
     @property
-    def actions(self):
+    def actions(self) -> List[pddl_action.Action]:
         return list(self.domain.actions)
 
     @property
-    def current_state_predicate_list(self):
+    def current_state_predicate_list(self) -> List[pddl_logic.Formula]:
         return self.list_state_predicate_list[-1]
 
-    def add_state_predicate_list(self, state_predicate_list: list):
+    @property
+    def goal(self) -> pddl_logic.Formula:
+        return self.problem.goal
+
+    def add_state_predicate_list(
+        self, state_predicate_list: List[pddl_logic.Formula]
+    ) -> None:
         self.list_state_predicate_list.append(state_predicate_list)
 
-    def _get_constant_mapping(self):
+    def _get_constant_mapping(self) -> Dict[str : pddl_prover.Constant]:
         return {
             c.name: pddl_prover.Constant(c.name) for c in list(self.problem.objects)
         }
 
-    def _get_predicate_mapping(self):
+    def _get_predicate_mapping(self) -> Dict[str : pddl_prover.Predicate]:
         return {
             p.name: pddl_prover.Predicate(p.name, p.arity)
             for p in list(self.domain.predicates)
         }
 
-    def _get_state_mapping(self, state_predicate_list: list) -> set:
+    def _get_state_mapping(
+        self, state_predicate_list: List[pddl_logic.Formula]
+    ) -> Set[Tuple[str, Tuple[str]]]:
         return {
             (p_state.name, tuple(term.name for term in p_state.terms))
             for p_state in state_predicate_list
         }
 
-    def _get_state_dict(self, state_predicate_list: list):
+    def _get_state_dict(
+        self, state_predicate_list: List[pddl_logic.Formula]
+    ) -> Tuple[Set[pddl_prover.Constant], Set[Tuple[str, Tuple[str]]]]:
         state_mapping = self._get_state_mapping(state_predicate_list)
         constants = {constant for constant in self.constant_mapping.values()}
         return (constants, state_mapping)
 
-    def get_current_state_dict(self):
+    def get_current_state_dict(
+        self,
+    ) -> Tuple[Set[pddl_prover.Constant], Set[Tuple[str, Tuple[str]]]]:
         return self._get_state_dict(self.current_state_predicate_list)
 
     def _precondition_to_predicate_called(
         self,
         precondition: pddl_logic.Formula,
-        parameters: list,
-        parameters_mapping: dict,
-    ):
+        parameters_mapping: Dict[str:str],
+    ) -> pddl_prover.Formula:
 
         if isinstance(precondition, (pddl_logic.And, pddl_logic.Or)):
             operands_list = []
@@ -88,7 +102,9 @@ class ProblemState:
             )
             return predicate(*predicate_args)
 
-    def _apply_action_effect(self, action: pddl_action.Action, parameters: list):
+    def _apply_action_effect(
+        self, action: pddl_action.Action, parameters: Tuple[str]
+    ) -> List[pddl_logic.Formula]:
 
         effect = action.effect
         operands = effect.operands
@@ -117,7 +133,9 @@ class ProblemState:
 
         return new_state_predicate_list
 
-    def is_action_possible(self, action: pddl_action.Action, parameters: list) -> bool:
+    def is_action_possible(
+        self, action: pddl_action.Action, parameters: Tuple[str]
+    ) -> bool:
 
         parameters_mapping = {
             parameter.name: parameters[i]
@@ -125,12 +143,12 @@ class ProblemState:
         }
         precondition = action.precondition
         predicate_called = self._precondition_to_predicate_called(
-            precondition, parameters, parameters_mapping
+            precondition, parameters_mapping
         )
         return predicate_called.evaluate(self.get_current_state_dict())
 
-    def goal_reached(self):
-        goal_precondition = self.problem.goal
+    def goal_reached(self) -> bool:
+        goal_precondition = self.goal
 
         if isinstance(goal_precondition, (pddl_logic.And, pddl_logic.Or)):
             operands = goal_precondition.operands
@@ -142,12 +160,12 @@ class ProblemState:
         }
 
         predicate_called = self._precondition_to_predicate_called(
-            goal_precondition, list(parameters_mapping.values()), parameters_mapping
+            goal_precondition, parameters_mapping
         )
 
         return predicate_called.evaluate(self.get_current_state_dict())
 
-    def get_all_possible_actions(self):
+    def get_all_possible_actions(self) -> List[Tuple[pddl_action.Action, Tuple[str]]]:
         actions = self.actions
         possible_actions = []
 
@@ -162,11 +180,12 @@ class ProblemState:
 
         return possible_actions
 
-    def take_action(self, action: pddl_action.Action, parameters: list) -> bool:
+    def take_action(self, action: pddl_action.Action, parameters: Tuple[str]) -> bool:
         if not self.is_action_possible(action, parameters):
             return False
 
         new_state_predicate_list = self._apply_action_effect(action, parameters)
         self.add_state_predicate_list(new_state_predicate_list)
+        self.actions_taken.append((action, parameters))
 
         return True

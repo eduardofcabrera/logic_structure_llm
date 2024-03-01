@@ -1,30 +1,30 @@
 from problem_state import ProblemState
 
-from pddl import parse_domain, parse_problem
-
-import yaml
 import re
 import json
 
+from typing import *
 from pathlib import Path
-from tqdm import tqdm
+
+import pddl.logic.predicates as pddl_predicates
+import pddl.action as pddl_action
+from pddl import parse_domain, parse_problem
 
 from langchain_core.prompts import (
     PromptTemplate,
     ChatPromptTemplate,
     MessagesPlaceholder,
 )
-from langchain_core.runnables import RunnablePassthrough
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
-from langchain_openai import ChatOpenAI
-from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
+from langchain.schema import HumanMessage, AIMessage, BaseMessage
+from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models.base import BaseChatModel
+from langchain_core.runnables import Runnable
 
 
 class Blocksworld:
     def __init__(
         self,
-        config: dict,
+        config: Dict,
         model: BaseChatModel,
     ):
         self.config = config
@@ -32,7 +32,7 @@ class Blocksworld:
         self.instance_prompt = self.get_instance_prompt()
         self.model = model
 
-    def create_problem_state(self):
+    def create_problem_state(self) -> ProblemState:
 
         domain_file = Path(self.config["domain_file"])
         instance_file = Path(self.config["instance_dir"]) / self.config[
@@ -44,7 +44,7 @@ class Blocksworld:
 
         return ProblemState(domain=domain, problem=problem)
 
-    def get_instance_prompt(self):
+    def get_instance_prompt(self) -> Dict:
 
         with open(self.config["prompt_json_file"]) as f:
             instance_prompt = json.load(f)["instances"][self.config["instance_id"] - 2]
@@ -52,11 +52,11 @@ class Blocksworld:
 
         return instance_prompt
 
-    def reboot_problem_state(self):
+    def reboot_problem_state(self) -> None:
 
         self.problem_state = self.create_problem_state()
 
-    def text_to_action(self, text: str) -> tuple:
+    def text_to_action(self, text: str) -> Tuple[pddl_action.Action, Tuple[str]]:
         actions_text_mapping = self.config["actions"]
         encoded_parameters = self.config["encoded_objects"]
 
@@ -94,22 +94,34 @@ class Blocksworld:
 
         return action, parameters
 
-    def take_action_from_text(self, text: str):
+    def take_action_from_text(self, text: str) -> Tuple[bool, bool]:
 
         action = self.text_to_action(text)
         if not action:
             return (False, False)
         return (self.problem_state.take_action(*action), True)
 
-    def current_state_to_text(self):
-        current_state_predicate_list = self.problem_state.current_state_predicate_list
+    def action_to_text(self, action: Tuple[pddl_action.Action, Tuple[str]]) -> str:
+        actions_mapping = self.config["actions"]
+        encoded_parameters = self.config["encoded_objects"]
+
+        return actions_mapping[action[0].name].format(
+            *[encoded_parameters[parameter] for parameter in action[-1]]
+        )
+
+    def predicate_to_text(self, predicate: pddl_predicates.Predicate) -> str:
         predicates_mapping = self.config["predicates"]
         encoded_parameters = self.config["encoded_objects"]
 
+        return predicates_mapping[predicate.name].format(
+            *[encoded_parameters[term.name] for term in predicate.terms]
+        )
+
+    def current_state_to_text(self) -> str:
+        current_state_predicate_list = self.problem_state.current_state_predicate_list
+
         predicates_texts = [
-            predicates_mapping[predicate.name].format(
-                *[encoded_parameters[term.name] for term in predicate.terms]
-            )
+            self.predicate_to_text(predicate)
             for predicate in current_state_predicate_list
         ]
 
@@ -118,6 +130,73 @@ class Blocksworld:
         )
 
         return state_text
+
+    def goal_to_text(self) -> str:
+
+        goal_precondition = self.problem_state.goal
+
+        if isinstance(goal_precondition, pddl_predicates.Predicate):
+            predicates_texts = [
+                self.predicate_to_text(goal_precondition).replace(" is", "")
+            ]
+        else:
+            predicates_texts = [
+                self.predicate_to_text(predicate).replace(" is", "")
+                for predicate in goal_precondition.operands
+            ]
+
+        goal_text = "My goal is to have " + " and ".join(predicates_texts) + ".\n"
+
+        return goal_text
+
+    def possible_actions_to_text(self) -> str:
+        possible_actions = self.problem_state.get_all_possible_actions()
+        actions_texts = [self.action_to_text(action) for action in possible_actions]
+
+        possible_actions_text = "Possible actions:\n"
+        for i, action_text in enumerate(actions_texts):
+            possible_actions_text += f"{i+1}: {action_text}\n"
+
+        return possible_actions_text
+
+
+class BlocksworldOnlyPrompt(Blocksworld):
+    def __init__(self, config: Dict, model: BaseChatModel):
+        super().__init__(config=config, model=model)
+
+    def get_chain(self) -> Runnable:
+        model = self.model
+        str_output_parser = StrOutputParser()
+        prompt = PromptTemplate.from_template(
+            "{input}" + self.config["prompts"]["order_prompts"]["only_prompt"]
+        )
+        chain = prompt | model | str_output_parser
+
+        return chain
+
+    def start_inference(self) -> Tuple[bool, str, Dict[str : Tuple[str, bool]]]:
+
+        chain = self.get_chain()
+
+        _input = self.instance_prompt["query"]
+        model_return = chain.invoke({"input": _input})
+
+        actions = model_return.split("\n")
+        actions = {
+            f"{i}": (action, self.take_action_from_text(action)[0])
+            for i, action in enumerate(actions)
+        }
+
+        goal_reached = self.problem_state.goal_reached()
+
+        self.reboot_problem_state()
+
+        return goal_reached, _input + model_return, actions
+
+
+class BlocksworldChat(Blocksworld):
+    def __init__(self, config: Dict, model: BaseChatModel):
+        super().__init__(config=config, model=model)
 
     def get_first_prompt(self) -> str:
 
@@ -138,35 +217,6 @@ class Blocksworld:
 
         return first_prompt
 
-    def get_only_prompt_chain(self):
-        model = self.model
-        str_output_parser = StrOutputParser()
-        prompt = PromptTemplate.from_template(
-            "{input}" + self.config["prompts"]["order_prompts"]["only_prompt"]
-        )
-        chain = prompt | model | str_output_parser
-
-        return chain
-
-    def start_chat_only_prompt(self):
-
-        chain = self.get_only_prompt_chain()
-
-        _input = self.instance_prompt["query"]
-        model_return = chain.invoke({"input": _input})
-
-        actions = model_return.split("\n")
-        actions = {
-            f"{i}": (action, self.take_action_from_text(action)[0])
-            for i, action in enumerate(actions)
-        }
-
-        goal_reached = self.problem_state.goal_reached()
-
-        self.reboot_problem_state()
-
-        return goal_reached, _input + model_return, actions
-
     def get_action_return_prompt(
         self, action_return: bool, with_current_state_prompt: bool = False
     ) -> str:
@@ -179,7 +229,7 @@ class Blocksworld:
 
         return feedback_prompt + state_text + order_prompt
 
-    def get_chat_chain(self):
+    def get_chain(self) -> Runnable:
         model = self.model
         str_output_parser = StrOutputParser()
         prompt = ChatPromptTemplate.from_messages(
@@ -192,7 +242,9 @@ class Blocksworld:
         chat_chain = prompt | model | str_output_parser
         return chat_chain
 
-    def chat_iteration(self, prompt_input: str, chat_history: list, chat_chain):
+    def chat_iteration(
+        self, prompt_input: str, chat_history: List[BaseMessage], chat_chain: Runnable
+    ) -> Tuple[str, List[BaseMessage]]:
         model_return = chat_chain.invoke(
             {"input": prompt_input, "chat_history": chat_history}
         )
@@ -202,14 +254,18 @@ class Blocksworld:
 
         return model_return, chat_history
 
-    def get_chat_content_from_chat_history(self, chat_history: list) -> str:
+    def get_chat_content_from_chat_history(
+        self, chat_history: List[BaseMessage]
+    ) -> str:
         chat_text = [f"{message.type}: {message.content}" for message in chat_history]
         chat_text = "\n".join(chat_text)
         return chat_text
 
-    def start_chat(self, with_current_state_prompt: bool = False):
+    def start_inference(
+        self, with_current_state_prompt: bool = False
+    ) -> Tuple[bool, str, Dict[str : Tuple[str, bool]]]:
 
-        chat_chain = self.get_chat_chain()
+        chat_chain = self.get_chain()
 
         chat_history = []
         actions = []
@@ -249,58 +305,116 @@ class Blocksworld:
         return goal_reached, chat_text, actions
 
 
-def main(instance_id: int):
+class BlocksworldChatWithPossibleActions(Blocksworld):
+    def __init__(self, config: Dict, model: BaseChatModel):
+        super().__init__(config=config, model=model)
 
-    with open("configs/blocksworld.yaml") as f:
-        config = yaml.safe_load(f)
-        f.close()
+    def get_chain(self) -> Runnable:
+        model = self.model
+        str_output_parser = StrOutputParser()
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "{input}"),
+            ]
+        )
 
-    domain = parse_domain("data/pddlgenerators/blocksworld/4ops/domain.pddl")
-    problem = parse_problem(
-        f"data/instances/blocksworld/generated_basic/instance-{instance_id}.pddl"
-    )
+        chat_chain = prompt | model | str_output_parser
+        return chat_chain
 
-    with open("data/prompts/blocksworld/task_1_plan_generation.json") as f:
-        instance_prompt = json.load(f)["instances"][instance_id - 2]
-        f.close()
+    def get_first_prompt(self) -> str:
 
-    problem_state = ProblemState(domain=domain, problem=problem)
+        current_condition_text = self.current_state_to_text()
+        goal_text = self.goal_to_text()
+        possible_actions_text = self.possible_actions_to_text()
 
-    model = ChatOpenAI(model="gpt-4-0125-preview")
+        order_prompt = "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
 
-    blocksworld_run = Blocksworld(
-        problem_state=problem_state,
-        config=config,
-        instance_prompt=instance_prompt,
-        model=model,
-    )
+        first_prompt = (
+            self.config["domain_intro"]
+            + self.config["one_shot_chat_with_possible_actions"]
+            + "\n[STATEMENT]\n"
+            + current_condition_text
+            + goal_text
+            + "\n[NEXT ACTION]\n"
+            + possible_actions_text
+            + order_prompt
+        )
 
-    returns_only_prompt = blocksworld_run.start_chat_only_prompt()
-    returns_chat = blocksworld_run.start_chat()
+        return first_prompt
 
-    return (returns_only_prompt, returns_chat)
+    def get_prompt(self) -> str:
+        current_condition_text = self.current_state_to_text()
+        goal_text = self.goal_to_text()
+        possible_actions_text = self.possible_actions_to_text()
 
+        order_prompt = "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
 
-if __name__ == "__main__":
+        prompt = (
+            # "\n[STATEMENT]\n"
+            # + current_condition_text
+            # + goal_text
+            "Action Realized! Goal not achieved yet! \n[NEXT ACTION]\n"
+            + possible_actions_text
+            + order_prompt
+        )
 
-    returns = []
+        return prompt
 
-    for instance_id in tqdm(range(2, 13)):
-        returns.append(main(instance_id))
+    def chat_iteration(
+        self, prompt_input: str, chat_history: List[BaseMessage], chat_chain: Runnable
+    ) -> Tuple[str, List[BaseMessage]]:
+        model_return = chat_chain.invoke(
+            {"input": prompt_input, "chat_history": chat_history}
+        )
 
-    print(returns)
+        chat_history.append(HumanMessage(content=prompt_input))
+        chat_history.append(AIMessage(content=model_return))
 
-    json_out = {
-        i: {
-            "only_prompt": {
-                "goal_achieved": _return[0][0],
-                "content": _return[0][1],
-                "actions": _return[0][2],
-            },
-            "chat": {"goal_achieved": _return[1][0], "content": _return[1][1]},
-        }
-        for i, _return in enumerate(returns)
-    }
+        return model_return, chat_history
 
-    with open("json_out.json", "w") as f:
-        json.dump(json_out, f)
+    def get_chat_content_from_chat_history(
+        self, chat_history: List[BaseMessage]
+    ) -> str:
+        chat_text = [f"{message.type}: {message.content}" for message in chat_history]
+        chat_text = "\n".join(chat_text)
+        return chat_text
+
+    def start_inference(self) -> Tuple[bool, str, List[str]]:
+
+        chain = self.get_chain()
+
+        chat_history = []
+        actions = []
+
+        first_prompt = self.get_first_prompt()
+        model_return, chat_history = self.chat_iteration(
+            first_prompt, chat_history, chain
+        )
+
+        for _ in range(self.config["max_iterations"]):
+
+            try:
+                action_id = int(model_return) - 1
+            except:
+                print(model_return)
+                break
+            possible_actions = self.problem_state.get_all_possible_actions()
+            action = possible_actions[action_id]
+            self.problem_state.take_action(*action)
+            actions.append(self.action_to_text(action))
+
+            if self.problem_state.goal_reached():
+                break
+
+            prompt = self.get_prompt()
+            model_return, chat_history = self.chat_iteration(
+                prompt, chat_history, chain
+            )
+
+        goal_reached = self.problem_state.goal_reached()
+        self.reboot_problem_state()
+
+        chat_history_text = self.get_chat_content_from_chat_history(chat_history)
+
+        return goal_reached, chat_history_text, actions
