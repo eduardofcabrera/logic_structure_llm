@@ -3,6 +3,7 @@ generalized_instance_dir: blocksworld/generated
 domain_file: data/pddlgenerators/blocksworld/4ops/domain.pddl
 prompt_json_file: "data/prompts/blocksworld_3/task_1_plan_generation.json"
 domain_name: blocksworld
+engine: BlocksworldChatWithPossibleActions
 n_instances: 501
 start: 1
 end: 500
@@ -29,89 +30,38 @@ domain_intro: |
    Once I put down or stack a block, my hand becomes empty.
    Once you stack a block on top of a second block, the second block is no longer clear.
 
-
-domain_intro_cost: |
-   I am playing with a set of blocks where I need to arrange the blocks into stacks. Here are the actions I can do:
-
-   Pick up a block. It takes 1 minute to pick up a block.
-   Unstack a block from on top of another block. It takes 1 minute to unstack a block from on top of another block.
-   Put down a block. It takes 1 minute to put down a block.
-   Stack a block on top of another block. It takes 1 minute to stack a block on top of another block.
-
-   I have the following restrictions on my actions:
-   I can only pick up or unstack one block at a time.
-   I can only pick up or unstack a block if my hand is empty.
-   I can only pick up a block if the block is on the table and the block is clear. A block is clear if the block has no other blocks on top of it and if the block is not picked up.
-   I can only unstack a block from on top of another block if the block I am unstacking was really on top of the other block.
-   I can only unstack a block from on top of another block if the block I am unstacking is clear.
-   Once I pick up or unstack a block, I am holding the block.
-   I can only put down a block that I am holding.
-   I can only stack a block on top of another block if I am holding the block being stacked.
-   I can only stack a block on top of another block if the block onto which I am stacking the block is clear.
-   Once I put down or stack a block, my hand becomes empty.
-   Once you stack a block on top of a second block, the second block is no longer clear.
-
-one_shot_chat: |
+few_shot_example_1: |
+   Below is an example to help you achieve my goal.
    [STATEMENT]
-   As initial conditions I have that, the blue block is clear, the orange block is clear, the hand is empty, the blue block is on top of the red block, the red block is on the table and the orange block is on the table.
-   My goal is to have that the red block is on top of the blue block and the orange block is on top of the red block.
+   As current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the
+   blue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.
+   My goal is to have the red block on top of the orange block and the blue block on top of the red block.
 
-   Return the first action I need to take to achieve my goal. Return one, and only one, action, without nothing more.
-   pick up the orange block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   put down the orange block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   pick up the blue block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
-   unstack the blue block from on top of the red block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   put down the blue block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+   Sequence of actions to achieve my goal:
    pick up the red block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
+   stack the red block on top of the orange block
    pick up the blue block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
-   unstack the orange block from on top of the red block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
-   stack the red block on top of the blue block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   pick up the orange block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   stack the orange block on top of the red block
+   stack the blue block on top of the red block
+   Goal Achieved!
 
-one_shot_chat_2: |
+few_shot_example_2: |
+   Below is an example to help you achieve my goal.
    [STATEMENT]
-   As initial conditions I have that, the orange block is clear, the hand is empty, the blue block is on top of the red block, the orange block is on top of the blue block and the red block is on the table.
+   As current conditions I have that, the orange block is clear, the hand is empty, the blue block is on top of the red block, the orange block is on top of the blue block and the red block is on the table.
    My goal is to have that the red block is on top of the blue block and the orange block is on top of the red block.
-
-   Return the first action I need to take to achieve my goal. Return one, and only one, action, without nothing more.
-   unstack the orange block from on top of the red block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
+   
+   Sequence of actions to achieve my goal:
    unstack the orange block from on top of the blue block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
    put down the orange block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
    unstack the blue block from on top of the red block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   put down the red block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
-   put down the orange block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
-   unstack the blue block from on top of the red block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
-   unstack the red block from on top of the blue block
-   human: This action is not possible due to the set of restrictions. Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.
    put down the blue block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
    pick up the red block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
    stack the red block on top of the blue block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
    pick up the orange block
-   human: Good action! Return the next action to achieve my goal. Return one, and only one, action, without nothing more.
-   stack the orange block on top of the red block
-
-one_shot_chat_with_possible_actions: |
+   stack the orange block on top of the red block\
+   Goal Achieved!
+   
+few_shot_example_1_: |
    [STATEMENT]
    As current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the
    blue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.
@@ -156,7 +106,7 @@ one_shot_chat_with_possible_actions: |
    Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
    ai: 2
 
-one_shot_chat_with_possible_actions_2: |
+few_shot_example_2_: |
    [STATEMENT]
    As current conditions I have that the orange block is on top of the red block, the blue block is on top of the orange block, the blue block is clear, the red block is on the table, the hand is empty.
    My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
@@ -242,15 +192,10 @@ one_shot_chat_with_possible_actions_2: |
    ai: 2
 
 prompts:
-   feedback_prompts:
-         positive: "Good action! "
-         negative: "This action is not possible due to the set of restrictions. "
-   order_prompts: 
-         positive: "Return the next action to achieve my goal. Return one, and only one, action, without nothing more.\n"
-         negative: "Return one action that is allowed by the set of restrictions. Return one, and only one, action, without nothing more.\n"
-         first_prompt: "Return the first action I need to take to achieve my goal. Return one, and only one, action, without nothing more.\n"
-         only_prompt: "\n Return only the sequence of actions as the example above, nothing more.\n"
-   remove_string: "My plan is as follows:\n\n[PLAN]"
+   order_prompts: "\nReturn the number of the best next action to achieve my goal. Return only: <ACTION_NUMBER>"
+   order_chain_of_thoughts: |
+      For each one of the possible actions, describe what would be the effect of each one and then return the number of the best next action to achieve my goal as:
+      [ACTION NUMBER]: <ACTION_NUMBER>
 
 actions:
   {pickup: "pick up the {}",

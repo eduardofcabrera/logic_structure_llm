@@ -39,12 +39,12 @@ class ProblemState:
     ) -> None:
         self.list_state_predicate_list.append(state_predicate_list)
 
-    def _get_constant_mapping(self) -> Dict[str : pddl_prover.Constant]:
+    def _get_constant_mapping(self) -> Dict[str, pddl_prover.Constant]:
         return {
             c.name: pddl_prover.Constant(c.name) for c in list(self.problem.objects)
         }
 
-    def _get_predicate_mapping(self) -> Dict[str : pddl_prover.Predicate]:
+    def _get_predicate_mapping(self) -> Dict[str, pddl_prover.Predicate]:
         return {
             p.name: pddl_prover.Predicate(p.name, p.arity)
             for p in list(self.domain.predicates)
@@ -73,7 +73,7 @@ class ProblemState:
     def _precondition_to_predicate_called(
         self,
         precondition: pddl_logic.Formula,
-        parameters_mapping: Dict[str:str],
+        parameters_mapping: Dict[str, str],
     ) -> pddl_prover.Formula:
 
         if isinstance(precondition, (pddl_logic.And, pddl_logic.Or)):

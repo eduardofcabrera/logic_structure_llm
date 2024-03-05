@@ -1,0 +1,51 @@
+[STATEMENT]
+As current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the
+blue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.
+My goal is to have the red block on top of the orange block and the blue block on top of the red block.
+
+[NEXT ACTION]
+Possible actions:
+1: pick up the blue block
+2: pick up the red block
+3: pick up the orange block
+4: restart problem and go back to the beginning
+5: finish problem
+Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+ai: 2
+human: Action Realized! Goal not achieved yet!
+As current conditions I have that the orange block is on the table, the orange block is clear, the blue block is
+clear, the blue block is on the table, the hand is currently holding red block.
+
+[NEXT ACTION]
+Possible actions:
+1: put down the red block
+2: stack the red block on top of the blue block
+3: stack the red block on top of the orange block
+4: restart problem and go back to the beginning
+5: finish problem
+Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+ai: 3
+human: Action Realized! Goal not achieved yet!
+As current conditions I have that the orange block is on the table, the blue block is clear, the blue block is
+on the table, the hand is empty, the red block is clear, the red block is on top of the orange block.
+
+[NEXT ACTION]
+Possible actions:
+1: pick up the blue block
+2: unstack the red block from on top of the orange block
+3: restart problem and go back to the beginning
+4: finish problem
+Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+ai: 1
+human: Action Realized! Goal not achieved yet!
+As current conditions I have that the orange block is on the table, the red block is clear, the red block is
+on top of the orange block, the hand is currently holding blue block.
+
+[NEXT ACTION]
+Possible actions:
+1: put down the blue block
+2: stack the blue block on top of the red block
+3: restart problem and go back to the beginning
+4: finish problem
+Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+    ai: 2

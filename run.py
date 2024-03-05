@@ -4,17 +4,13 @@ import json
 
 from tqdm import tqdm
 
-from blocksworld import (
-    Blocksworld,
-    BlocksworldChat,
-    BlocksworldOnlyPrompt,
-    BlocksworldChatWithPossibleActions,
-)
+import blocksworld
+from blocksworld import Blocksworld
 
 from langchain_openai import ChatOpenAI
 
 
-def main(config_run: dict):
+def run_instance(config_run: dict):
 
     task_config_file = config_run["task_config"]
 
@@ -26,22 +22,40 @@ def main(config_run: dict):
 
     model = ChatOpenAI(model=config_run["model"])
 
-    blocksworld_chat_with_possible_actions = BlocksworldChatWithPossibleActions(
-        config=task_config, model=model
-    )
+    Engine: Blocksworld = getattr(blocksworld, task_config["engine"])
 
-    possible_actions = (
-        blocksworld_chat_with_possible_actions.problem_state.get_all_possible_actions()
-    )
-    return_ = blocksworld_chat_with_possible_actions.start_inference()
+    engine = Engine(config=task_config, model=model)
 
-    # blocksworld_chat = BlocksworldChat(config=task_config, model=model)
-    # blocksworld_only_prompt = BlocksworldOnlyPrompt(config=task_config, model=model)
+    result = engine.start_inference()
 
-    # returns_chat = blocksworld_chat.start_inference()
-    # returns_only_prompt = blocksworld_only_prompt.start_inference()
+    return result
 
-    return tuple(return_)
+
+def main(config_run: dict):
+
+    if config_run["run_single"]:
+        inference_return = run_instance(config_run)
+        print(*inference_return, sep="\n")
+    else:
+        returns = []
+
+        for instance_id in tqdm(range(12, 27)):
+            config_run["instance_id"] = instance_id
+            returns.append(run_instance(config_run))
+
+        json_out = {
+            i: {
+                "chat_with_possible_actions": {
+                    "goal_achieved": _return[0],
+                    "content": _return[1],
+                    "actions": _return[2],
+                },
+            }
+            for i, _return in enumerate(returns)
+        }
+
+        with open(config_run["json_output"], "w") as f:
+            json.dump(json_out, f)
 
 
 def parse_args():
@@ -60,22 +74,4 @@ if __name__ == "__main__":
         config_run = yaml.safe_load(f)
         f.close()
 
-    returns = []
-
-    for instance_id in tqdm(range(12, 23)):
-        config_run["instance_id"] = instance_id
-        returns.append(main(config_run))
-
-    json_out = {
-        i: {
-            "chat_with_possible_actions": {
-                "goal_achieved": _return[0],
-                "content": _return[1],
-                "actions": _return[2],
-            },
-        }
-        for i, _return in enumerate(returns)
-    }
-
-    with open("json_out_3_1_1_1_1   .json", "w") as f:
-        json.dump(json_out, f)
+    main(config_run)

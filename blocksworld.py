@@ -168,13 +168,13 @@ class BlocksworldOnlyPrompt(Blocksworld):
         model = self.model
         str_output_parser = StrOutputParser()
         prompt = PromptTemplate.from_template(
-            "{input}" + self.config["prompts"]["order_prompts"]["only_prompt"]
+            "{input}" + self.config["prompts"]["order_prompts"]
         )
         chain = prompt | model | str_output_parser
 
         return chain
 
-    def start_inference(self) -> Tuple[bool, str, Dict[str : Tuple[str, bool]]]:
+    def start_inference(self) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
 
         chain = self.get_chain()
 
@@ -198,20 +198,24 @@ class BlocksworldChat(Blocksworld):
     def __init__(self, config: Dict, model: BaseChatModel):
         super().__init__(config=config, model=model)
 
+    def get_few_shot_text(self) -> str:
+        few_shot_text = ""
+        for n_shot in range(self.config["few_shot"]):
+            few_shot_text += "\n" + self.config[f"few_shot_example_{n_shot+1}"]
+        return few_shot_text
+
     def get_first_prompt(self) -> str:
 
-        remove_string = self.config["prompts"]["remove_string"]
-        len_remove_string = len(remove_string)
-        query = self.instance_prompt["query"].split("[STATEMENT]")[-1][
-            :-len_remove_string
-        ]
+        current_condition_text = self.current_state_to_text()
+        goal_text = self.goal_to_text()
+        few_shot_text = self.get_few_shot_text()
 
         first_prompt = (
             self.config["domain_intro"]
-            + self.config["one_shot_chat"]
-            + self.config["one_shot_chat_2"]
-            + "\n[STATEMENT]"
-            + query
+            + few_shot_text
+            + "\n[STATEMENT]\n"
+            + current_condition_text
+            + goal_text
             + self.config["prompts"]["order_prompts"]["first_prompt"]
         )
 
@@ -263,7 +267,7 @@ class BlocksworldChat(Blocksworld):
 
     def start_inference(
         self, with_current_state_prompt: bool = False
-    ) -> Tuple[bool, str, Dict[str : Tuple[str, bool]]]:
+    ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
 
         chat_chain = self.get_chain()
 
@@ -271,7 +275,6 @@ class BlocksworldChat(Blocksworld):
         actions = []
 
         first_prompt_text = self.get_first_prompt()
-
         model_return, chat_history = self.chat_iteration(
             first_prompt_text, chat_history, chat_chain
         )
@@ -279,17 +282,17 @@ class BlocksworldChat(Blocksworld):
         for _ in range(self.config["max_iterations"]):
 
             action_return, is_action = self.take_action_from_text(model_return)
-            prompt_text = self.get_action_return_prompt(
-                action_return, with_current_state_prompt
-            )
+            actions.append((model_return, action_return))
 
             if not (is_action):
                 break
 
-            actions.append((model_return, action_return))
-
             if self.problem_state.goal_reached():
                 break
+
+            prompt_text = self.get_action_return_prompt(
+                action_return, with_current_state_prompt
+            )
 
             model_return, chat_history = self.chat_iteration(
                 prompt_text, chat_history, chat_chain
@@ -305,34 +308,21 @@ class BlocksworldChat(Blocksworld):
         return goal_reached, chat_text, actions
 
 
-class BlocksworldChatWithPossibleActions(Blocksworld):
+class BlocksworldChatWithPossibleActions(BlocksworldChat):
     def __init__(self, config: Dict, model: BaseChatModel):
         super().__init__(config=config, model=model)
-
-    def get_chain(self) -> Runnable:
-        model = self.model
-        str_output_parser = StrOutputParser()
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                MessagesPlaceholder(variable_name="chat_history"),
-                ("user", "{input}"),
-            ]
-        )
-
-        chat_chain = prompt | model | str_output_parser
-        return chat_chain
 
     def get_first_prompt(self) -> str:
 
         current_condition_text = self.current_state_to_text()
         goal_text = self.goal_to_text()
         possible_actions_text = self.possible_actions_to_text()
-
-        order_prompt = "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
+        few_shot_text = self.get_few_shot_text()
+        order_prompt = self.config["prompts"]["order_prompts"]
 
         first_prompt = (
             self.config["domain_intro"]
-            + self.config["one_shot_chat_with_possible_actions"]
+            + few_shot_text
             + "\n[STATEMENT]\n"
             + current_condition_text
             + goal_text
@@ -347,38 +337,26 @@ class BlocksworldChatWithPossibleActions(Blocksworld):
         current_condition_text = self.current_state_to_text()
         goal_text = self.goal_to_text()
         possible_actions_text = self.possible_actions_to_text()
+        order_prompt = self.config["prompts"]["order_prompts"]
 
-        order_prompt = "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
+        actions_taken = self.problem_state.actions_taken
+        actions_taken_text = "\nSequence of actions already taken to achieve my goal:\n"
+        for action in actions_taken:
+            action_text = self.action_to_text(action)
+            actions_taken_text += action_text + "\n"
 
         prompt = (
-            # "\n[STATEMENT]\n"
-            # + current_condition_text
-            # + goal_text
-            "Action Realized! Goal not achieved yet! \n[NEXT ACTION]\n"
+            "Action Realized!\n"
+            + actions_taken_text
+            + "\nGoal not achieved yet!\n"
+            + current_condition_text
+            + goal_text
+            + "\n[NEXT ACTION]\n"
             + possible_actions_text
             + order_prompt
         )
 
         return prompt
-
-    def chat_iteration(
-        self, prompt_input: str, chat_history: List[BaseMessage], chat_chain: Runnable
-    ) -> Tuple[str, List[BaseMessage]]:
-        model_return = chat_chain.invoke(
-            {"input": prompt_input, "chat_history": chat_history}
-        )
-
-        chat_history.append(HumanMessage(content=prompt_input))
-        chat_history.append(AIMessage(content=model_return))
-
-        return model_return, chat_history
-
-    def get_chat_content_from_chat_history(
-        self, chat_history: List[BaseMessage]
-    ) -> str:
-        chat_text = [f"{message.type}: {message.content}" for message in chat_history]
-        chat_text = "\n".join(chat_text)
-        return chat_text
 
     def start_inference(self) -> Tuple[bool, str, List[str]]:
 
@@ -392,8 +370,16 @@ class BlocksworldChatWithPossibleActions(Blocksworld):
             first_prompt, chat_history, chain
         )
 
+        # chat_history[0].content = chat_history[0].content.split("[NEXT ACTION]")[0]
+        # chat_history = chat_history[:1]
+
         for _ in range(self.config["max_iterations"]):
 
+            """index = model_return.find("[ACTION NUMBER]")
+            if index == -1:
+                print(model_return)
+                break
+            action_srt = model_return[index + len("[ACTION NUMBER]") + 2]"""
             try:
                 action_id = int(model_return) - 1
             except:
@@ -412,8 +398,13 @@ class BlocksworldChatWithPossibleActions(Blocksworld):
                 prompt, chat_history, chain
             )
 
+            # chat_history = chat_history[:1]
+
         goal_reached = self.problem_state.goal_reached()
         self.reboot_problem_state()
+
+        chat_history.append(HumanMessage(content=prompt))
+        chat_history.append(AIMessage(content=model_return))
 
         chat_history_text = self.get_chat_content_from_chat_history(chat_history)
 
