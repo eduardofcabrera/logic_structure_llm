@@ -71,6 +71,7 @@ langchain-openai==0.0.5
 langchainhub==0.1.14
 langserve==0.0.41
 langsmith==0.0.86
+lark==1.1.9
 lz4==4.3.3
 MarkupSafe==2.1.5
 marshmallow==3.20.2
@@ -113,6 +114,8 @@ overrides==7.7.0
 packaging==23.2
 pandas==2.0.3
 parso==0.8.3
+pddl==0.4.0
+PDDL-Prover==1.0.0
 pexpect==4.9.0
 pickleshare==0.7.5
 platformdirs==4.2.0
@@ -177,5 +180,3 @@ wrapt==1.16.0
 yarl==1.9.4
 zipp==3.17.0
 zstandard==0.22.0
-pddl
-pddl-prover
