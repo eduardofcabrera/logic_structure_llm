@@ -1,0 +1,8 @@
+services:
+  logic_structure_llm:
+    build: ./
+    tty: true
+    container_name: logic_structure_llm
+    volumes:
+      - .:/usr/src/code
+    working_dir: /usr/src/code/

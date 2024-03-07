@@ -2,5 +2,5 @@ task_config: configs/blocksworld_chat_with_possible_actions.yaml
 instance_id: 14
 max_iterations: 10
 model: gpt-4-0125-preview
-run_single: False
+run_single: True
 json_output: experiments_results/json_goal_few_second.json
