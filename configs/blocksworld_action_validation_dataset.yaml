@@ -1,14 +1,14 @@
-instance_dir: data/instances/blocksworld/generated_basic
-generalized_instance_dir: blocksworld/generated
+instance_dir: data/instances/blocksworld/generated_basic_3
+generalized_instance_dir: blocksworld/generated_basic_3
 domain_file: data/pddlgenerators/blocksworld/4ops/domain.pddl
 prompt_json_file: "data/prompts/blocksworld/task_1_plan_generation.json"
 domain_name: blocksworld
-engine: BlocksworldOnlyPrompt
+engine: BlocksworldChatWithPossibleActions
 n_instances: 501
 start: 1
 end: 500
 instances_template: instance-{}.pddl
-few_shot: 2
+few_shot: 12
 domain_intro: |
    I am playing with a set of blocks where I need to arrange the blocks into stacks. Here are the actions I can do
 
@@ -31,7 +31,18 @@ domain_intro: |
    Once you stack a block on top of a second block, the second block is no longer clear.
 
 prompts:
-   order_prompts: "\n Return only the sequence of actions as the example above, nothing more.\n"
+   order_prompts: "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
+   order_explain: |
+      Return the number of the best next action to achieve my goal. Explain your reasoning and then write [ACTION NUMBER]: <ACTION NUMBER>.
+   order_chain_of_thoughts: |
+      For each one of the possible actions, describe what would be the effect of each one and then return the number of the best next action to achieve my goal as:
+      [ACTION NUMBER]: <ACTION NUMBER>
+   order_steps: |
+      Let's think step-by-step to return the best next action number.
+      First: analyze the current condition.
+      Second: Evaluate each one of the possible actions.
+      Third: Anlyze the sequence of previous taken actions to check help you in your decision.
+      Forth: Return the best next action and then write [ACTION NUMBER]: <ACTION NUMBER>.
 
 actions:
   {pickup: "pick up the {}",

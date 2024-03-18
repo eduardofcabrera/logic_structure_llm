@@ -1,14 +1,27 @@
-import argparse
 import yaml
 import json
 
 from tqdm import tqdm
 
+from parse_args import parse_args
+
 import blocksworld
 from blocksworld import Blocksworld
 
 from langchain_openai import ChatOpenAI
+from langchain_community.llms import Ollama
+from langchain_community.chat_models import ChatOllama
 
+def get_model(model: str):
+    
+    if "gpt" in model:
+        return ChatOpenAI(model=model)
+    elif "llama" in model:
+        return ChatOllama(model=model)
+    elif "mistral" in model:
+        return ChatOllama(model=model)
+    else:
+        raise Exception("Error model name")
 
 def run_instance(config_run: dict):
 
@@ -20,7 +33,7 @@ def run_instance(config_run: dict):
 
     task_config.update(config_run)
 
-    model = ChatOpenAI(model=config_run["model"])
+    model = get_model(model=config_run["model"])
 
     Engine: Blocksworld = getattr(blocksworld, task_config["engine"])
 
@@ -39,7 +52,7 @@ def main(config_run: dict):
     else:
         returns = []
 
-        for instance_id in tqdm(range(12, 27)):
+        for instance_id in tqdm(range(1, 101)):
             config_run["instance_id"] = instance_id
             returns.append(run_instance(config_run))
 
@@ -56,15 +69,6 @@ def main(config_run: dict):
 
         with open(config_run["json_output"], "w") as f:
             json.dump(json_out, f)
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config")
-    args = parser.parse_args()
-
-    return args
-
 
 if __name__ == "__main__":
     args = parse_args()

@@ -8,7 +8,7 @@ n_instances: 501
 start: 1
 end: 500
 instances_template: instance-{}.pddl
-few_shot: 2
+few_shot: 0
 domain_intro: |
    I am playing with a set of blocks where I need to arrange the blocks into stacks. Here are the actions I can do
 
@@ -29,6 +29,225 @@ domain_intro: |
    I can only stack a block on top of another block if the block onto which I am stacking the block is clear.
    Once I put down or stack a block, my hand becomes empty.
    Once you stack a block on top of a second block, the second block is no longer clear.
+
+few_shot_example_1_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the
+   blue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.
+   My goal is to have the red block on top of the orange block and the blue block on top of the red block.
+
+   Sequence of actions already taken to achieve my goal:
+   no actions
+
+   [NEXT ACTION]
+   Possible actions:
+   1: pick up the blue block
+   2: pick up the red block
+   3: pick up the orange block
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   2
+
+few_shot_example_2_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on the table, the orange block is clear, the blue block is
+   clear, the blue block is on the table, the hand is currently holding red block.
+   My goal is to have the red block on top of the orange block and the blue block on top of the red block.
+
+   Sequence of actions already taken to achieve my goal:
+   pick up the red block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: put down the red block
+   2: stack the red block on top of the blue block
+   3: stack the red block on top of the orange block
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   3
+
+few_shot_example_3_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on the table, the blue block is clear, the blue block is
+   on the table, the hand is empty, the red block is clear, the red block is on top of the orange block.
+   My goal is to have the red block on top of the orange block and the blue block on top of the red block.
+
+   Sequence of actions already taken to achieve my goal:
+   pick up the red block
+   stack the red block on top of the orange block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: pick up the blue block
+   2: unstack the red block from on top of the orange block
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   1
+
+few_shot_example_4_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on the table, the red block is clear, the red block is
+   on top of the orange block, the hand is currently holding blue block.
+   My goal is to have the red block on top of the orange block and the blue block on top of the red block.
+
+   Sequence of actions already taken to achieve my goal:
+   pick up the red block
+   stack the red block on top of the orange block
+   pick up the blue block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: put down the blue block
+   2: stack the blue block on top of the red block
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   2
+
+few_shot_example_5_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on top of the red block, the blue block is on top of the orange block, the blue block is clear, the red block is on the table, the hand is empty.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   no actions
+
+   [NEXT ACTION]
+   Possible actions:
+   1: unstack the blue block from on top of the orange block
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   1
+
+few_shot_example_6_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on top of the red block, the red block is on the table, the hand is currently holding blue block, the orange block is clear.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: put down the blue block
+   2: stack the blue block on top of the orange block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   1
+
+few_shot_example_7_: |
+   [STATEMENT]
+   As current conditions I have that the orange block is on top of the red block, the red block is on the table, the orange block is clear, the blue block is clear, the hand is empty, the blue block is on the table.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+   put down the blue block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: pick up the blue block
+   2: unstack the orange block from on top of the red block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   2
+
+few_shot_example_8_: |
+   [STATEMENT]
+   As current conditions I have that the red block is on the table, the blue block is clear, the blue block is on the table, the hand is currently holding orange block, the red block is clear.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+   put down the blue block
+   unstack the orange block from on top of the red block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: put down the orange block
+   2: stack the orange block on top of the blue block
+   3: stack the orange block on top of the red block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   1
+
+few_shot_example_9_: |
+   [STATEMENT]
+   As current conditions I have that the red block is on the table, the blue block is clear, the blue block is on the table, the red block is clear, the orange block is clear, the hand is empty, the orange block is on the table.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+   put down the blue block
+   unstack the orange block from on top of the red block
+   put down the orange block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: pick up the blue block
+   2: pick up the orange block
+   3: pick up the red block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   1
+
+few_shot_example_10_: |
+   [STATEMENT]
+   As current conditions I have that the red block is on the table, the red block is clear, the orange block is clear, the orange block is on the table, the hand is currently holding blue block.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+   put down the blue block
+   unstack the orange block from on top of the red block
+   put down the orange block
+   pick up the blue block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: put down the blue block
+   2: stack the blue block on top of the orange block
+   3: stack the blue block on top of the red block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   3
+
+few_shot_example_11_: |
+   [STATEMENT]
+   As current conditions I have that the red block is on the table, the orange block is clear, the orange block is on the table, the hand is empty, the blue block is clear, the blue block is on top of the red block.
+   My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+   put down the blue block
+   unstack the orange block from on top of the red block
+   put down the orange block
+   pick up the blue block
+   stack the blue block on top of the red block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: pick up the orange block
+   2: unstack the blue block from on top of the red block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   1
+
+few_shot_example_12_: |
+   [STATEMENT]
+   As current conditions I have that the red block is on the table, the blue block is clear, the blue block is on top of the red block, the hand is currently holding orange block.
+
+   Sequence of actions already taken to achieve my goal:
+   unstack the blue block from on top of the orange block
+   put down the blue block
+   unstack the orange block from on top of the red block
+   put down the orange block
+   pick up the blue block
+   stack the blue block on top of the red block
+   pick up the orange block
+
+   [NEXT ACTION]
+   Possible actions:
+   1: put down the orange block
+   2: stack the orange block on top of the blue block
+
+   Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
+   2
+
 
 few_shot_example_1: |
    Below is an example to help you achieve my goal.
@@ -58,10 +277,10 @@ few_shot_example_2: |
    pick up the red block
    stack the red block on top of the blue block
    pick up the orange block
-   stack the orange block on top of the red block\
+   stack the orange block on top of the red block
    Goal Achieved!
    
-few_shot_example_1_: |
+few_shot_example_1__: |
    [STATEMENT]
    As current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the
    blue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.
@@ -106,7 +325,7 @@ few_shot_example_1_: |
    Return the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>
    ai: 2
 
-few_shot_example_2_: |
+few_shot_example_2__: |
    [STATEMENT]
    As current conditions I have that the orange block is on top of the red block, the blue block is on top of the orange block, the blue block is clear, the red block is on the table, the hand is empty.
    My goal is to have the blue block on top of the red block and the orange block on top of the blue block.
@@ -192,10 +411,18 @@ few_shot_example_2_: |
    ai: 2
 
 prompts:
-   order_prompts: "\nReturn the number of the best next action to achieve my goal. Return only: <ACTION_NUMBER>"
+   order_prompts: "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
+   order_explain: |
+      Return the number of the best next action to achieve my goal. Explain your reasoning and then write [ACTION NUMBER]: <ACTION NUMBER>.
    order_chain_of_thoughts: |
       For each one of the possible actions, describe what would be the effect of each one and then return the number of the best next action to achieve my goal as:
-      [ACTION NUMBER]: <ACTION_NUMBER>
+      [ACTION NUMBER]: <ACTION NUMBER>
+   order_steps: |
+      Let's think step-by-step to return the best next action number.
+      First: analyze the current condition.
+      Second: Evaluate each one of the possible actions.
+      Third: Anlyze the sequence of previous taken actions to check help you in your decision.
+      Forth: Return the best next action and then write [ACTION NUMBER]: <ACTION NUMBER>.
 
 actions:
   {pickup: "pick up the {}",

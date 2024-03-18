@@ -1,6 +1,9 @@
-task_config: configs/blocksworld_chat_with_possible_actions.yaml
-instance_id: 14
+task_config: configs/blocksworld_chat.yaml
+instance_id: 2
 max_iterations: 10
-model: gpt-4-0125-preview
+model: llama2:70b
+#model: mistral
+#model: llama2:13b-chat
+#model: gpt-4-0125-preview
 run_single: True
-json_output: experiments_results/json_goal_few_second.json
+json_output: experiments_results/test.json

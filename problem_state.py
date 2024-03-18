@@ -6,13 +6,17 @@ import pddl.core as pddl_core
 
 import pddl_prover
 
+import random
+
 from typing import *
 from itertools import product
 from copy import deepcopy
 
 
 class ProblemState:
-    def __init__(self, domain: pddl_core.Domain, problem: pddl_core.Problem):
+    def __init__(self, domain: pddl_core.Domain, problem: pddl_core.Problem, seed: int = 42):
+        
+        random.seed(seed)
         self.domain = domain
         self.problem = problem
 
@@ -179,6 +183,21 @@ class ProblemState:
                     possible_actions.append((action, parameter_choice))
 
         return possible_actions
+    
+    def get_all_impossible_actions(self) -> List[Tuple[pddl_action.Action, Tuple[str]]]:
+        actions = self.actions
+        impossible_actions = []
+
+        for action in actions:
+            n_parameters = len(action.parameters)
+            parameters_choices = product(
+                self.constant_mapping.keys(), repeat=n_parameters
+            )
+            for parameter_choice in parameters_choices:
+                if not self.is_action_possible(action, parameter_choice):
+                    impossible_actions.append((action, parameter_choice))
+
+        return impossible_actions
 
     def take_action(self, action: pddl_action.Action, parameters: Tuple[str]) -> bool:
         if not self.is_action_possible(action, parameters):

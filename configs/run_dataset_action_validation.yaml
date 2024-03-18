@@ -1,0 +1,10 @@
+task_config: configs/blocksworld_action_validation_dataset.yaml
+instance_id_range: [1, 101]
+impossible_n_actions: 10
+model: llama2:70b
+#model: mistral
+#model: llama2:13b-chat
+#model: gpt-4-0125-preview
+create_dataset: False
+dataset_output_file: experiments_results/blocks_action_validation
+dataset_file: experiments_results/action_validation_dataset_1_101_3.csv
