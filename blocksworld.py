@@ -40,6 +40,8 @@ def is_valid_action(action_text: str, config: Dict):
     if len(action_match) != 1:
         return False
     return True
+
+
 class Blocksworld:
     def __init__(
         self,
@@ -80,12 +82,17 @@ class Blocksworld:
         sort_check = ["unstack", "putdown", "stack", "pickup"]
         for action in sort_check:
             mapping = actions_text_mapping[action]
+<<<<<<< HEAD
             mapping = "(.*)"+mapping.replace("{}", "(.*)")
+=======
+            mapping = "(.*)" + mapping.replace("{}", "(.*)")
+>>>>>>> origin
             match_obj = re.match(mapping, text)
             if match_obj:
                 break
         if match_obj == None:
             return text
+<<<<<<< HEAD
         #actions_text_match = {
         #    action_name: re.match("(.*)"+action_text_format.replace("{}", "(.*)"), text)
         #    for action_name, action_text_format in actions_text_mapping.items()
@@ -109,6 +116,30 @@ class Blocksworld:
         return filtered_text
 
     
+=======
+        # actions_text_match = {
+        #    action_name: re.match("(.*)"+action_text_format.replace("{}", "(.*)"), text)
+        #    for action_name, action_text_format in actions_text_mapping.items()
+        # }
+
+        # action_match = [
+        #    (action_name, action_text_match)
+        #    for action_name, action_text_match in actions_text_match.items()
+        #    if action_text_match
+        # ]
+
+        # if len(action_match) != 1:
+        #    return text
+
+        # action_match = action_match[0]
+        # match_obj = action_match[1]
+        cut_index_init = match_obj.regs[1][1]
+        filtered_text = text[cut_index_init:]
+        n_blocks = 1 if action in ["putdown", "pickup"] else 2
+        filtered_text = "block".join(filtered_text.split("block")[:n_blocks]) + "block"
+        return filtered_text
+
+>>>>>>> origin
     def text_to_action(self, text: str) -> Tuple[pddl_action.Action, Tuple[str]]:
         actions_text_mapping = self.config["actions"]
         encoded_parameters = self.config["encoded_objects"]
@@ -132,9 +163,11 @@ class Blocksworld:
 
         encoded_parameters_values = list(encoded_parameters.values())
         encoded_parameters_keys = list(encoded_parameters.keys())
-        
+
         parameters = action_text_match.groups()
-        parameters_check = [parameter in encoded_parameters_values for parameter in parameters]
+        parameters_check = [
+            parameter in encoded_parameters_values for parameter in parameters
+        ]
         if False in parameters_check:
             return
 
@@ -155,7 +188,11 @@ class Blocksworld:
             prompt = self.instance_prompt["query"].split("[STATEMENT]")[1]
             return "[STATEMETN]\n" + prompt + "\nAnswer based on the example above.\n"
         return ""
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> origin
     def take_action_from_text(self, text: str) -> Tuple[bool, bool]:
 
         action = self.text_to_action(text)
@@ -228,6 +265,13 @@ class Blocksworld:
         chat_text = "\n".join(chat_text)
         return chat_text
 
+    def get_chat_content_from_chat_history(
+        self, chat_history: List[BaseMessage]
+    ) -> str:
+        chat_text = [f"{message.type}: {message.content}" for message in chat_history]
+        chat_text = "\n".join(chat_text)
+        return chat_text
+
 
 class BlocksworldOnlyPrompt(Blocksworld):
     def __init__(self, config: Dict, model: BaseChatModel):
@@ -242,18 +286,31 @@ class BlocksworldOnlyPrompt(Blocksworld):
                 ("user", "{input}"),
             ]
         )
+<<<<<<< HEAD
         #prompt = PromptTemplate.from_template(
         #    "{input}" + self.config["prompts"]["order_prompts"]
         #)
+=======
+        # prompt = PromptTemplate.from_template(
+        #    "{input}" + self.config["prompts"]["order_prompts"]
+        # )
+>>>>>>> origin
         chain = prompt | model | str_output_parser
 
         return chain
 
+<<<<<<< HEAD
     def start_inference(self, pbar: None) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
+=======
+    def start_inference(
+        self, pbar: None
+    ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
+>>>>>>> origin
 
         chain = self.get_chain()
 
         _input = self.instance_prompt["query"]
+<<<<<<< HEAD
         input_split = "My plan is as follows:".join(_input.split("My plan is as follows:")[:-1])
         order_prompt = """\nReturn only the sequence of actions as the example above, nothing more.\nReturn the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```"""
         
@@ -265,11 +322,26 @@ class BlocksworldOnlyPrompt(Blocksworld):
         chat_history.append(AIMessage(content=model_return))
         
         #try:
+=======
+        input_split = "My plan is as follows:".join(
+            _input.split("My plan is as follows:")[:-1]
+        )
+        order_prompt = """\nReturn only the sequence of actions as the example above, nothing more.\nReturn the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```"""
+
+        _input = input_split + order_prompt
+        chat_history = []
+
+        model_return = chain.invoke({"input": _input, "chat_history": chat_history})
+        chat_history.append(HumanMessage(content=_input))
+        chat_history.append(AIMessage(content=model_return))
+
+        # try:
+>>>>>>> origin
         #    actions = model_return.lower().split("<plan>")[1].split("<\plan>")[0].split("\n")
-        #except:
+        # except:
         #    print(model_return)
         #    return False, _input + model_return, []
-        #actions = [action for action in actions if action != ""]
+        # actions = [action for action in actions if action != ""]
 
         actions = model_return.split("\n")
         actions = [self.filter_text_action(action) for action in actions]
@@ -277,10 +349,11 @@ class BlocksworldOnlyPrompt(Blocksworld):
             f"{i}": (action, self.take_action_from_text(action))
             for i, action in enumerate(actions)
         }
-        
+
         actions = {
             key: (value[0], value[1][0])
-            for key, value in actions.items() if value[1][1]
+            for key, value in actions.items()
+            if value[1][1]
         }
 
         goal_reached = self.problem_state.goal_reached()
@@ -289,7 +362,12 @@ class BlocksworldOnlyPrompt(Blocksworld):
         self.reboot_problem_state()
 
         return goal_reached, chat_history_content, actions
+<<<<<<< HEAD
     
+=======
+
+
+>>>>>>> origin
 class BlocksworldOnlyPromptIterative(Blocksworld):
     def __init__(self, config: Dict, model: BaseChatModel):
         super().__init__(config=config, model=model)
@@ -303,10 +381,14 @@ class BlocksworldOnlyPromptIterative(Blocksworld):
                 ("user", "{input}"),
             ]
         )
-        
+
         chain = prompt | model | str_output_parser
         return chain
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> origin
     def chat_iteration(
         self, prompt_input: str, chat_history: List[BaseMessage], chat_chain: Runnable
     ) -> Tuple[str, List[BaseMessage]]:
@@ -319,47 +401,87 @@ class BlocksworldOnlyPromptIterative(Blocksworld):
 
         return model_return, chat_history
 
+<<<<<<< HEAD
     def start_inference(self, pbar=None) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
+=======
+    def start_inference(
+        self, pbar=None
+    ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
+>>>>>>> origin
 
         chain = self.get_chain()
         chat_history = []
 
         _input = self.instance_prompt["query"]
+<<<<<<< HEAD
         input_split = "My plan is as follows:".join(_input.split("My plan is as follows:")[:-1])
         order_prompt = """\nReturn only the sequence of actions as the example above, nothing more.\nReturn the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```"""
         
+=======
+        input_split = "My plan is as follows:".join(
+            _input.split("My plan is as follows:")[:-1]
+        )
+        order_prompt = """\nReturn only the sequence of actions as the example above, nothing more.\nReturn the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```"""
+
+>>>>>>> origin
         _input = input_split + order_prompt
-        
+
         model_return, chat_history = self.chat_iteration(_input, chat_history, chain)
         model_return_list = [model_return]
+<<<<<<< HEAD
         #model_return = chain.invoke({"input": _input})
 
         for i in range(self.config["max_iterations_prompt_iterative"]):
             if pbar:
                 pbar.set_description(f"Iteration: {i}/{self.config['max_iterations_prompt_iterative']}")
             
+=======
+        # model_return = chain.invoke({"input": _input})
+
+        for i in range(self.config["max_iterations_prompt_iterative"]):
+            if pbar:
+                pbar.set_description(
+                    f"Iteration: {i}/{self.config['max_iterations_prompt_iterative']}"
+                )
+
+>>>>>>> origin
             actions = model_return.split("\n")
             actions = [self.filter_text_action(action) for action in actions]
             actions = {
                 f"{i}": (action, self.take_action_from_text(action))
                 for i, action in enumerate(actions)
             }
-            
+
             actions = {
                 key: (value[0], value[1][0])
-                for key, value in actions.items() if value[1][1]
+                for key, value in actions.items()
+                if value[1][1]
             }
 
             goal_reached = self.problem_state.goal_reached()
             correct_response = goal_reached
+<<<<<<< HEAD
             not_possible_actions = [value[1] for key, value in actions.items() if not value[1]]
+=======
+            not_possible_actions = [
+                value[1] for key, value in actions.items() if not value[1]
+            ]
+>>>>>>> origin
             if len(not_possible_actions) != 0:
                 correct_response = False
             if correct_response:
                 break
+<<<<<<< HEAD
             
             prompt = "The previous plan was incorrect please correct it and write it again. Return the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```\n"
             model_return, chat_history = self.chat_iteration(prompt, chat_history, chain)
+=======
+
+            prompt = "The previous plan was incorrect please correct it and write it again. Return the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```\n"
+            model_return, chat_history = self.chat_iteration(
+                prompt, chat_history, chain
+            )
+>>>>>>> origin
             model_return_list.append(model_return)
             self.reboot_problem_state()
 
@@ -383,14 +505,18 @@ class BlocksworldChat(Blocksworld):
         current_condition_text = self.current_state_to_text()
         goal_text = self.goal_to_text()
         few_shot_text = self.get_one_shot_text()
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin
         first_prompt = (
             self.config["domain_intro"]
             + few_shot_text
             + "\n[STATEMENT]\n"
             + current_condition_text
             + goal_text
-            #+ order_prompt
+            # + order_prompt
             + self.config["prompts"]["order_prompts"]["first_prompt"]
         )
 
@@ -404,7 +530,7 @@ class BlocksworldChat(Blocksworld):
         state_text = self.current_state_to_text() if with_current_state_prompt else ""
 
         feedback_prompt = self.config["prompts"]["feedback_prompts"][feedback]
-        #feedback_prompt = ""
+        # feedback_prompt = ""
         order_prompt = self.config["prompts"]["order_prompts"][feedback]
 
         return feedback_prompt + state_text + order_prompt
@@ -435,7 +561,11 @@ class BlocksworldChat(Blocksworld):
         return model_return, chat_history
 
     def start_inference(
+<<<<<<< HEAD
         self, with_current_state_prompt: bool = False, pbar = None
+=======
+        self, with_current_state_prompt: bool = False, pbar=None
+>>>>>>> origin
     ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
         
         chat_chain = self.get_chain()
@@ -449,12 +579,21 @@ class BlocksworldChat(Blocksworld):
         )
 
         for i in range(self.config["max_iterations"]):
+<<<<<<< HEAD
             
             if pbar:
                 pbar.set_description(f"Iteration: {i}/{self.config['max_iterations']}")
             
             #action = self.filter_text_action(model_return)
             #is_valid = is_valid_action(action, self.config)
+=======
+
+            if pbar:
+                pbar.set_description(f"Iteration: {i}/{self.config['max_iterations']}")
+
+            # action = self.filter_text_action(model_return)
+            # is_valid = is_valid_action(action, self.config)
+>>>>>>> origin
             index = model_return.find("THE NEXT BEST ACTION IS: ")
             if index == -1:
                 action = "no action"
@@ -463,7 +602,7 @@ class BlocksworldChat(Blocksworld):
                     action = self.filter_text_action(model_return)
                 except:
                     action = "no action"
-            
+
             action_return, is_action = self.take_action_from_text(action)
             actions.append((action, action_return))
 
@@ -472,8 +611,136 @@ class BlocksworldChat(Blocksworld):
 
             if self.problem_state.goal_reached():
                 break
+<<<<<<< HEAD
             
             chat_history[-1].content = "THE NEXT BEST ACTION IS: " + action
+=======
+
+            chat_history[-1].content = "THE NEXT BEST ACTION IS: " + action
+            prompt_text = self.get_action_return_prompt(
+                action_return, with_current_state_prompt
+            )
+
+            model_return, chat_history = self.chat_iteration(
+                prompt_text, chat_history, chat_chain
+            )
+
+        actions = {f"{i}": action for i, action in enumerate(actions)}
+        chat_text = self.get_chat_content_from_chat_history(chat_history)
+
+        goal_reached = self.problem_state.goal_reached()
+
+        self.reboot_problem_state()
+
+        return goal_reached, chat_text, actions
+
+
+class BlocksworldIterativeActions(BlocksworldChat):
+    def __init__(self, config: Dict, model: BaseChatModel):
+        super().__init__(config=config, model=model)
+
+    def get_first_prompt(self) -> str:
+
+        current_condition_text = self.current_state_to_text()
+        goal_text = self.goal_to_text()
+        few_shot_text = self.get_one_shot_text()
+
+        first_prompt = (
+            self.config["domain_intro"]
+            + few_shot_text
+            + "\n[STATEMENT]\n"
+            + current_condition_text
+            + goal_text
+            + self.config["prompts"]["order_prompts"]
+        )
+
+        return first_prompt
+
+    def get_action_return_prompt(
+        self, action_return: bool, with_current_state_prompt: bool = False
+    ) -> str:
+
+        state_text = self.current_state_to_text() if with_current_state_prompt else ""
+
+        feedback_prompt = ""
+        order_prompt = self.config["prompts"]["order_prompts"]
+
+        return feedback_prompt + state_text + order_prompt
+
+    def get_check_goal_chain(self) -> Runnable:
+        model = self.model
+        str_output_parser = StrOutputParser()
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                MessagesPlaceholder(variable_name="chat_history"),
+                (
+                    "user",
+                    "Check if the goal is reached. Return only with: ```RETURN: <YES/NO>```",
+                ),
+            ]
+        )
+
+        chat_chain = prompt | model | str_output_parser
+        return chat_chain
+
+    def start_inference(
+        self, with_current_state_prompt: bool = False, pbar=None
+    ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
+
+        chat_chain = self.get_chain()
+        check_goal_chain = self.get_check_goal_chain()
+
+        chat_history = []
+        actions = []
+
+        first_prompt_text = self.get_first_prompt()
+        model_return, chat_history = self.chat_iteration(
+            first_prompt_text, chat_history, chat_chain
+        )
+
+        for i in range(self.config["max_iterations"]):
+
+            if pbar:
+                pbar.set_description(f"Iteration: {i}/{self.config['max_iterations']}")
+
+            # action = self.filter_text_action(model_return)
+            # is_valid = is_valid_action(action, self.config)
+            index = model_return.find("THE NEXT BEST ACTION IS: ")
+            if index == -1:
+                action = "no action"
+            else:
+                try:
+                    action = self.filter_text_action(model_return)
+                except:
+                    action = "no action"
+
+            action_return, is_action = self.take_action_from_text(action)
+            actions.append((action, action_return))
+            chat_history[-1].content = "THE NEXT BEST ACTION IS: " + action
+
+            if not (is_action):
+                break
+
+            model_return_check_goal = check_goal_chain.invoke(
+                {"chat_history": chat_history}
+            )
+            model_return_check_goal = model_return_check_goal.lower()
+            model_return_check_goal = model_return_check_goal.replace("reurn", "return")
+
+            index = model_return_check_goal.find("return")
+            if index == -1:
+                goal_reached = False
+            else:
+                index = index + len("return") + 2
+                try:
+                    goal_reached = model_return_check_goal[index] == "y"
+                except:
+                    goal_reached = False
+
+            if goal_reached:
+                break
+
+>>>>>>> origin
             prompt_text = self.get_action_return_prompt(
                 action_return, with_current_state_prompt
             )
@@ -633,6 +900,33 @@ class BlocksworldRandomChoice(BlocksworldChat):
         return goal_reached, chat_text, actions
         
 
+class BlocksworldRandomChoice(BlocksworldChat):
+    def __init__(self, config: Dict, model: BaseChatModel):
+        super().__init__(config=config, model=model)
+
+    def start_inference(
+        self, with_current_state_prompt: bool = False, pbar=None
+    ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
+
+        actions = []
+
+        for i in range(self.config["max_iterations"]):
+            possible_actions = self.problem_state.get_all_possible_actions()
+            action = random.choice(possible_actions)
+            action_text = self.action_to_text(action)
+            actions.append(action_text)
+            actions_return, is_action = self.take_action_from_text(action_text)
+
+            if self.problem_state.goal_reached():
+                break
+
+        actions = {f"{i}": (action, True) for i, action in enumerate(actions)}
+        chat_text = "Random Choice\n"
+        goal_reached = self.problem_state.goal_reached()
+
+        return goal_reached, chat_text, actions
+
+
 class BlocksworldChatWithPossibleActions(BlocksworldChat):
     def __init__(self, config: Dict, model: BaseChatModel):
         super().__init__(config=config, model=model)
@@ -644,7 +938,11 @@ class BlocksworldChatWithPossibleActions(BlocksworldChat):
         possible_actions_text = self.possible_actions_to_text()
         few_shot_text = self.get_one_shot_text()
         order_prompt = self.config["prompts"]["order_prompts"]
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin
         order_prompt = """\n Answer based on the example above.\n\nReturn the number of the best next action to achieve my goal. Write only with:\n```RETURN: <OPTION NUMBER>.```"""
 
         first_prompt = (
@@ -653,7 +951,7 @@ class BlocksworldChatWithPossibleActions(BlocksworldChat):
             + "\n[STATEMENT]\n"
             + current_condition_text
             + goal_text
-            #+ "\nSequence of actions already taken to achieve my goal:\nno actions\n"
+            # + "\nSequence of actions already taken to achieve my goal:\nno actions\n"
             + "\n[NEXT ACTION]\n"
             + possible_actions_text
             + order_prompt
@@ -672,16 +970,20 @@ class BlocksworldChatWithPossibleActions(BlocksworldChat):
         for action in actions_taken:
             action_text = self.action_to_text(action)
             actions_taken_text += action_text + "\n"
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin
         order_prompt = """\nReturn the number of the best next action to achieve my goal. Write only with:\n```RETURN: <OPTION NUMBER>.```"""
 
         prompt = (
-            #"Action Realized!\n"
-            #+ "\nGoal not achieved yet!\n"
+            # "Action Realized!\n"
+            # + "\nGoal not achieved yet!\n"
             "[STATEMENT]\n"
             + current_condition_text
             + goal_text
-            #+ actions_taken_text
+            # + actions_taken_text
             + "\n[NEXT ACTION]\n"
             + possible_actions_text
             + order_prompt
@@ -689,7 +991,11 @@ class BlocksworldChatWithPossibleActions(BlocksworldChat):
 
         return prompt
 
+<<<<<<< HEAD
     def start_inference(self, pbar = None) -> Tuple[bool, str, List[str]]:
+=======
+    def start_inference(self, pbar=None) -> Tuple[bool, str, List[str]]:
+>>>>>>> origin
 
         chain = self.get_chain()
 
@@ -701,15 +1007,19 @@ class BlocksworldChatWithPossibleActions(BlocksworldChat):
             first_prompt, chat_history, chain
         )
 
-        #chat_history[0].content = chat_history[0].content.split("[STATEMENT]")[0]
-        #chat_history = chat_history[:1]
-        
-        #prompt = "I am playing with a set of blocks where I need to arrange the blocks into stacks. Here are the actions I can do\n\nPick up a block\nUnstack a block from on top of another block\nPut down a block\nStack a block on top of another block\n\nI have the following restrictions on my actions:\nI can only pick up or unstack one block at a time.\nI can only pick up or unstack a block if my hand is empty.\nI can only pick up a block if the block is on the table and the block is clear. A block is clear if the block has no other blocks on top of it and if the block is not picked up.\nI can only unstack a block from on top of another block if the block I am unstacking was really on top of the other block.\nI can only unstack a block from on top of another block if the block I am unstacking is clear.\nOnce I pick up or unstack a block, I am holding the block.\nI can only put down a block that I am holding.\nI can only stack a block on top of another block if I am holding the block being stacked.\nI can only stack a block on top of another block if the block onto which I am stacking the block is clear.\nOnce I put down or stack a block, my hand becomes empty.\nOnce you stack a block on top of a second block, the second block is no longer clear.\n\nBelow is an example to help you achieve my goal.\n[STATEMENT]\nAs current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the\nblue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.\nMy goal is to have the red block on top of the orange block and the blue block on top of the red block.\n\nSequence of actions to achieve my goal:\npick up the red block\nstack the red block on top of the orange block\npick up the blue block\nstack the blue block on top of the red block\nGoal Achieved!\n\nBelow is an example to help you achieve my goal.\n[STATEMENT]\nAs current conditions I have that, the orange block is clear, the hand is empty, the blue block is on top of the red block, the orange block is on top of the blue block and the red block is on the table.\nMy goal is to have that the red block is on top of the blue block and the orange block is on top of the red block.\n\nSequence of actions to achieve my goal:\nunstack the orange block from on top of the blue block\nput down the orange block\nunstack the blue block from on top of the red block\nput down the blue block\npick up the red block\nstack the red block on top of the blue block\npick up the orange block\nstack the orange block on top of the red block\\\nGoal Achieved!\n\n[STATEMENT]\nAs current conditions I have that the blue block is clear, the blue block is on top of the red block, the orange block is clear, the red block is on the table, the hand is empty, the orange block is on the table.\nMy goal is to have the red block on top of the blue block and the orange block on top of the red block.\n\n[NEXT ACTION]\nPossible actions:\n1: unstack the blue block from on top of the red block\n2: pick up the orange block\nReturn the number of the best next action to achieve my goal. Explain your decision and then write: [ACTION NUMBER]: <ACTION_NUMBER>\n"
+        # chat_history[0].content = chat_history[0].content.split("[STATEMENT]")[0]
+        # chat_history = chat_history[:1]
+
+        # prompt = "I am playing with a set of blocks where I need to arrange the blocks into stacks. Here are the actions I can do\n\nPick up a block\nUnstack a block from on top of another block\nPut down a block\nStack a block on top of another block\n\nI have the following restrictions on my actions:\nI can only pick up or unstack one block at a time.\nI can only pick up or unstack a block if my hand is empty.\nI can only pick up a block if the block is on the table and the block is clear. A block is clear if the block has no other blocks on top of it and if the block is not picked up.\nI can only unstack a block from on top of another block if the block I am unstacking was really on top of the other block.\nI can only unstack a block from on top of another block if the block I am unstacking is clear.\nOnce I pick up or unstack a block, I am holding the block.\nI can only put down a block that I am holding.\nI can only stack a block on top of another block if I am holding the block being stacked.\nI can only stack a block on top of another block if the block onto which I am stacking the block is clear.\nOnce I put down or stack a block, my hand becomes empty.\nOnce you stack a block on top of a second block, the second block is no longer clear.\n\nBelow is an example to help you achieve my goal.\n[STATEMENT]\nAs current conditions I have that the orange block is on the table, the orange block is clear, the hand is empty, the\nblue block is clear, the red block is clear, the blue block is on the table, the red block is on the table.\nMy goal is to have the red block on top of the orange block and the blue block on top of the red block.\n\nSequence of actions to achieve my goal:\npick up the red block\nstack the red block on top of the orange block\npick up the blue block\nstack the blue block on top of the red block\nGoal Achieved!\n\nBelow is an example to help you achieve my goal.\n[STATEMENT]\nAs current conditions I have that, the orange block is clear, the hand is empty, the blue block is on top of the red block, the orange block is on top of the blue block and the red block is on the table.\nMy goal is to have that the red block is on top of the blue block and the orange block is on top of the red block.\n\nSequence of actions to achieve my goal:\nunstack the orange block from on top of the blue block\nput down the orange block\nunstack the blue block from on top of the red block\nput down the blue block\npick up the red block\nstack the red block on top of the blue block\npick up the orange block\nstack the orange block on top of the red block\\\nGoal Achieved!\n\n[STATEMENT]\nAs current conditions I have that the blue block is clear, the blue block is on top of the red block, the orange block is clear, the red block is on the table, the hand is empty, the orange block is on the table.\nMy goal is to have the red block on top of the blue block and the orange block on top of the red block.\n\n[NEXT ACTION]\nPossible actions:\n1: unstack the blue block from on top of the red block\n2: pick up the orange block\nReturn the number of the best next action to achieve my goal. Explain your decision and then write: [ACTION NUMBER]: <ACTION_NUMBER>\n"
         prompt = ""
         for i in range(self.config["max_iterations"]):
             if pbar:
                 pbar.set_description(f"Iteration: {i}/{self.config['max_iterations']}")
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> origin
             model_return = model_return.lower()
 
             model_return = model_return.replace("reurn", "return")
@@ -746,18 +1056,26 @@ class BlocksworldChatWithPossibleActions(BlocksworldChat):
 
             if self.problem_state.goal_reached():
                 break
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> origin
             chat_history[-1].content = "RETURN: " + option_str
             prompt = self.get_prompt()
             model_return, chat_history = self.chat_iteration(
                 prompt, chat_history, chain
             )
 
+<<<<<<< HEAD
             #chat_history = chat_history[:1]
+=======
+            # chat_history = chat_history[:1]
+>>>>>>> origin
 
         goal_reached = self.problem_state.goal_reached()
         self.reboot_problem_state()
-        
+
         chat_history.append(HumanMessage(content=prompt))
         chat_history.append(AIMessage(content=model_return))
 
