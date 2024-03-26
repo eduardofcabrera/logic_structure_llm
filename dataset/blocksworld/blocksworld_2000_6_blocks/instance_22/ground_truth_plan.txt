@@ -1,0 +1,8 @@
+(unstack c b)
+(put-down c)
+(unstack a e)
+(stack a c)
+(pick-up e)
+(stack e d)
+(pick-up b)
+(stack b e)

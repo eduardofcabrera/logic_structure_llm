@@ -1,9 +1,15 @@
-task_config: configs/blocksworld_chat.yaml
+task_config: configs/blocksworld_iterative_actions.yaml
 instance_id: 2
 max_iterations: 10
-model: llama2:70b
+max_iterations_prompt_iterative: 5
+instance_range: [2, 102]
+blocksworld: generated_basic
+temperature: 0
+one_shot: False
+model: mixtral
+#model: llama2:70b
 #model: mistral
 #model: llama2:13b-chat
 #model: gpt-4-0125-preview
-run_single: True
-json_output: experiments_results/test.json
+run_single: False
+json_output_dir: experiments_results

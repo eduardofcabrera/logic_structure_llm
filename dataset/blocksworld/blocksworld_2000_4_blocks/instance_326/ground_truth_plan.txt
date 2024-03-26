@@ -1,0 +1,4 @@
+(unstack d a)
+(stack d c)
+(unstack a b)
+(stack a d)

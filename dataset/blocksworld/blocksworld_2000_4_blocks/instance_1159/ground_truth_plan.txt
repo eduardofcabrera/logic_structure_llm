@@ -1,0 +1,2 @@
+(unstack b d)
+(stack b a)
