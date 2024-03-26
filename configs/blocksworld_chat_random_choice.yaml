@@ -1,0 +1,58 @@
+instance_dir: data/instances/blocksworld/generated_basic_3
+generalized_instance_dir: blocksworld/generated
+domain_file: data/pddlgenerators/blocksworld/4ops/domain.pddl
+prompt_json_file: "data/prompts/blocksworld_3/task_1_plan_generation.json"
+domain_name: blocksworld
+engine: BlocksworldRandomChoice
+n_instances: 501
+start: 1
+end: 500
+instances_template: instance-{}.pddl
+few_shot: 0
+
+prompts:
+   order_prompts: "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
+   order_explain: |
+      Return the number of the best next action to achieve my goal. Explain your reasoning and then write [ACTION NUMBER]: <ACTION NUMBER>.
+   order_chain_of_thoughts: |
+      For each one of the possible actions, describe what would be the effect of each one and then return the number of the best next action to achieve my goal as:
+      [ACTION NUMBER]: <ACTION NUMBER>
+   order_steps: |
+      Let's think step-by-step to return the best next action number.
+      First: analyze the current condition.
+      Second: Evaluate each one of the possible actions.
+      Third: Anlyze the sequence of previous taken actions to check help you in your decision.
+      Forth: Return the best next action and then write [ACTION NUMBER]: <ACTION NUMBER>.
+
+actions:
+  {pickup: "pick up the {}",
+   putdown: "put down the {}",
+   stack: "stack the {} on top of the {}",
+   unstack: "unstack the {} from on top of the {}"}
+
+
+predicates:
+  {ontable: "the {} is on the table",
+   clear: "the {} is clear",
+   handempty: "the hand is empty",
+   holding: "the hand is currently holding {}",
+   "on": "the {} is on top of the {}"}
+
+predicate_mapping:
+   {
+   "ontable": "on the table",
+   "clear": "clear",
+   "handempty": "hand is empty",
+   "holding": "holding",
+   "on": "on top of"
+   }  
+
+
+# encoded_objects: dictionary of object names, have to be alphabetical
+encoded_objects:
+  {"a": "red block", "b": "blue block", "c": "orange block", "d": "yellow block",
+   "e": "white block", "f": "magenta block", "g": "black block", "h": "cyan block",
+   "i": "green block", "j": "violet block", "k": "silver block", "l": "gold block" }
+
+callbacks:
+   - t1_gen_goal_directed_instances
