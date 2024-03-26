@@ -411,7 +411,7 @@ few_shot_example_2__: |
    ai: 2
 
 prompts:
-   order_prompts: "\nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
+   order_prompts: "\n Answer based on the example above.\n \nReturn the number of the next action to achieve my goal. Return only: <ACTION_NUMBER>"
    order_explain: |
       Return the number of the best next action to achieve my goal. Explain your reasoning and then write [ACTION NUMBER]: <ACTION NUMBER>.
    order_chain_of_thoughts: |

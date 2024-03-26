@@ -1,7 +1,4 @@
-instance_dir: data/instances/blocksworld/generated_basic_3
-generalized_instance_dir: blocksworld/generated
 domain_file: data/pddlgenerators/blocksworld/4ops/domain.pddl
-prompt_json_file: "data/prompts/blocksworld_3/task_1_plan_generation.json"
 domain_name: blocksworld
 engine: BlocksworldChat
 n_instances: 501

@@ -1,0 +1,15 @@
+
+As initial conditions I have that, the blue block is clear, the white block is clear, the hand is empty, the red block is on top of the orange block, the yellow block is on top of the red block, the white block is on top of the yellow block, the blue block is on the table and the orange block is on the table.
+My goal is to have that the yellow block is on top of the blue block and the white block is on top of the yellow block.
+
+My plan is as follows:
+
+[PLAN]
+unstack the white block from on top of the yellow block
+put down the white block
+unstack the yellow block from on top of the red block
+stack the yellow block on top of the blue block
+pick up the white block
+stack the white block on top of the yellow block
+[PLAN END]
+
