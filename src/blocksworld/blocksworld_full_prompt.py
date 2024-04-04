@@ -9,7 +9,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models.base import BaseChatModel
 from langchain_core.runnables import Runnable
 
-from blocksworld import Blocksworld
+from src.blocksworld.blocksworld import Blocksworld
 
 
 class BlocksworldOnlyPrompt(Blocksworld):
@@ -30,19 +30,38 @@ class BlocksworldOnlyPrompt(Blocksworld):
 
         return chain
 
+    def get_few_shot_text(self) -> str:
+        file = open(self.config["few_shot"], "r")
+        few_shot = file.read()
+        
+        return few_shot
+    
+    def get_first_prompt(self) -> str:
+        
+        domain_intro = self.config["domain_intro"]
+        few_shot_text = self.get_few_shot_text()
+        current_condition_text = self.current_state_to_text()
+        goal_text = self.goal_to_text()
+        order_prompt = """\nReturn only the sequence of actions as the example above, nothing more.\nReturn the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```"""
+        
+        first_prompt = (
+            domain_intro
+            + few_shot_text
+            + "\n[STATEMENT]\n"
+            + current_condition_text
+            + goal_text
+            + order_prompt
+        )
+        
+        return first_prompt
+
     def start_inference(
         self, pbar: None
     ) -> Tuple[bool, str, Dict[str, Tuple[str, bool]]]:
 
         chain = self.get_chain()
 
-        _input = self.instance_prompt["query"]
-        input_split = "My plan is as follows:".join(
-            _input.split("My plan is as follows:")[:-1]
-        )
-        order_prompt = """\nReturn only the sequence of actions as the example above, nothing more.\nReturn the plan that makes me achieve my goal.\n Write only:\n ```<plan>\n[PLAN]\n<\plan>```"""
-
-        _input = input_split + order_prompt
+        _input = self.get_first_prompt()
         chat_history = []
 
         model_return = chain.invoke({"input": _input, "chat_history": chat_history})
@@ -68,3 +87,6 @@ class BlocksworldOnlyPrompt(Blocksworld):
         self.reboot_problem_state()
 
         return goal_reached, chat_history_content, actions
+
+if __name__ == "__main__":
+    pass

@@ -21,7 +21,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models.base import BaseChatModel
 from langchain_core.runnables import Runnable
 
-from blocksworld import Blocksworld
+from src.blocksworld.blocksworld import Blocksworld
 
 
 class BlocksworldChat(Blocksworld):
@@ -142,3 +142,6 @@ class BlocksworldChat(Blocksworld):
         self.reboot_problem_state()
 
         return goal_reached, chat_text, actions
+
+if __name__ == "__main__":
+    pass

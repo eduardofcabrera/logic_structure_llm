@@ -19,3 +19,6 @@ def is_valid_action(action_text: str, config: Dict):
     if len(action_match) != 1:
         return False
     return True
+
+if __name__ == "__main__":
+    pass

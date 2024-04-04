@@ -7,7 +7,7 @@ from pathlib import Path
 
 from parse_args import parse_args
 
-from blocksworld import Blocksworld, is_valid_action
+from _blocksworld import Blocksworld, is_valid_action
 
 from langchain_openai import ChatOpenAI
 from langchain_community.llms import Ollama

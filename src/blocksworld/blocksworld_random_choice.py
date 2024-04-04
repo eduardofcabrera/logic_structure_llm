@@ -2,7 +2,7 @@ import random
 from typing import *
 from langchain.chat_models.base import BaseChatModel
 
-from blocksworld_validation_iterative_action import BlocksworldChat
+from src.blocksworld.blocksworld_validation_iterative_action import BlocksworldChat
 
 
 class BlocksworldRandomChoice(BlocksworldChat):
@@ -30,3 +30,6 @@ class BlocksworldRandomChoice(BlocksworldChat):
         goal_reached = self.problem_state.goal_reached()
 
         return goal_reached, chat_text, actions
+
+if __name__ == "__main__":
+    pass

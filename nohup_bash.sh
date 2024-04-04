@@ -1,0 +1,1 @@
+nohup python run.py --config configs/run.yaml > log.log

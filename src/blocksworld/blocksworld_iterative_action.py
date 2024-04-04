@@ -8,12 +8,16 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models.base import BaseChatModel
 from langchain_core.runnables import Runnable
 
-from blocksworld_validation_iterative_action import BlocksworldChat
+from src.blocksworld.blocksworld_validation_iterative_action import BlocksworldChat
 
 
 class BlocksworldIterativeActions(BlocksworldChat):
     def __init__(self, config: Dict, model: BaseChatModel):
         super().__init__(config=config, model=model)
+
+    @property
+    def num_predict(self):
+        return 50
 
     def get_first_prompt(self) -> str:
 
@@ -130,3 +134,6 @@ class BlocksworldIterativeActions(BlocksworldChat):
         self.reboot_problem_state()
 
         return goal_reached, chat_text, actions
+
+if __name__ == "__main__":
+    pass

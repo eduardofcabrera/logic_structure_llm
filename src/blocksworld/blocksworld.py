@@ -23,15 +23,12 @@ class Blocksworld:
     ):
         self.config = config
         self.problem_state = self.create_problem_state()
-        self.instance_prompt = self.get_instance_prompt()
         self.model = model
 
     def create_problem_state(self) -> ProblemState:
 
         domain_file = Path(self.config["domain_file"])
-        instance_file = Path(self.config["instance_dir"]) / self.config[
-            "instances_template"
-        ].format(self.config["instance_id"])
+        instance_file = self.config["pddl_file"]
 
         domain = parse_domain(domain_file)
         problem = parse_problem(instance_file)
@@ -146,6 +143,8 @@ class Blocksworld:
             self.predicate_to_text(predicate)
             for predicate in current_state_predicate_list
         ]
+        
+        predicates_texts.sort()
 
         state_text = (
             "As current conditions I have that " + ", ".join(predicates_texts) + ".\n"
@@ -167,6 +166,7 @@ class Blocksworld:
                 for predicate in goal_precondition.operands
             ]
 
+        predicates_texts.sort()
         goal_text = "My goal is to have " + " and ".join(predicates_texts) + ".\n"
 
         return goal_text
@@ -174,6 +174,7 @@ class Blocksworld:
     def possible_actions_to_text(self) -> str:
         possible_actions = self.problem_state.get_all_possible_actions()
         actions_texts = [self.action_to_text(action) for action in possible_actions]
+        actions_texts.sort()
 
         possible_actions_text = "Possible actions:\n"
         for i, action_text in enumerate(actions_texts):
@@ -187,3 +188,6 @@ class Blocksworld:
         chat_text = [f"{message.type}: {message.content}" for message in chat_history]
         chat_text = "\n".join(chat_text)
         return chat_text
+
+if __name__ == "__main__":
+    pass
