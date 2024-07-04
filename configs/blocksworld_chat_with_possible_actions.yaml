@@ -425,10 +425,10 @@ prompts:
       Forth: Return the best next action and then write [ACTION NUMBER]: <ACTION NUMBER>.
 
 actions:
-  {pickup: "pick up the {}",
-   putdown: "put down the {}",
-   stack: "stack the {} on top of the {}",
-   unstack: "unstack the {} from on top of the {}"}
+  {pickup: "pick up {}",
+   putdown: "put down {}",
+   stack: "stack {} on top of {}",
+   unstack: "unstack {} from on top of {}"}
 
 
 predicates:

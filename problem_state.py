@@ -16,7 +16,7 @@ from copy import deepcopy
 class ProblemState:
     def __init__(self, domain: pddl_core.Domain, problem: pddl_core.Problem, seed: int = 42):
         
-        random.seed(seed)
+        #random.seed(seed)
         self.domain = domain
         self.problem = problem
 

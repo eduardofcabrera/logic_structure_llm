@@ -3,9 +3,11 @@ from problem_state import ProblemState
 
 import re
 import json
+import random
 
 from typing import *
 from pathlib import Path
+from abc import abstractmethod
 
 import pddl.logic.predicates as pddl_predicates
 import pddl.action as pddl_action
@@ -19,11 +21,11 @@ class Blocksworld:
     def __init__(
         self,
         config: Dict,
-        model: BaseChatModel,
+        model: BaseChatModel = None,
     ):
         self.config = config
         self.problem_state = self.create_problem_state()
-        self.model = model
+        self.model = lambda: model
 
     def create_problem_state(self) -> ProblemState:
 
@@ -89,6 +91,7 @@ class Blocksworld:
         encoded_parameters_keys = list(encoded_parameters.keys())
 
         parameters = action_text_match.groups()
+        parameters = [parameter.replace("the ", "") for parameter in parameters]
         parameters_check = [
             parameter in encoded_parameters_values for parameter in parameters
         ]
@@ -143,8 +146,11 @@ class Blocksworld:
             self.predicate_to_text(predicate)
             for predicate in current_state_predicate_list
         ]
-        
+
         predicates_texts.sort()
+
+        # random.seed(50)
+        # random.shuffle(predicates_texts)
 
         state_text = (
             "As current conditions I have that " + ", ".join(predicates_texts) + ".\n"
@@ -166,15 +172,20 @@ class Blocksworld:
                 for predicate in goal_precondition.operands
             ]
 
+        # random.seed(50)
+        # random.shuffle(predicates_texts)
+
+        # predicates_texts = predicates_texts[::-1]
         predicates_texts.sort()
         goal_text = "My goal is to have " + " and ".join(predicates_texts) + ".\n"
 
         return goal_text
 
-    def possible_actions_to_text(self) -> str:
-        possible_actions = self.problem_state.get_all_possible_actions()
+    def possible_actions_to_text(self, possible_actions=None) -> str:
+        if not possible_actions:
+            possible_actions = self.problem_state.get_all_possible_actions()
         actions_texts = [self.action_to_text(action) for action in possible_actions]
-        actions_texts.sort()
+        # actions_texts.sort()
 
         possible_actions_text = "Possible actions:\n"
         for i, action_text in enumerate(actions_texts):
@@ -188,6 +199,25 @@ class Blocksworld:
         chat_text = [f"{message.type}: {message.content}" for message in chat_history]
         chat_text = "\n".join(chat_text)
         return chat_text
+
+    def get_state(self):
+        possible_actions = self.problem_state.get_all_possible_actions()
+        possible_actions_text = [
+            self.action_to_text(action) for action in possible_actions
+        ]
+        possible_actions_dict = {
+            self.action_to_text(possible_action): possible_action
+            for possible_action in possible_actions
+        }
+        possible_actions = list(dict(sorted(possible_actions_dict.items())).values())
+        possible_actions_text.sort()
+        return (
+            self.current_state_to_text(),
+            possible_actions,
+            possible_actions_text,
+            self.goal_to_text(),
+        )
+
 
 if __name__ == "__main__":
     pass

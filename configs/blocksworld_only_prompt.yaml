@@ -34,6 +34,12 @@ prompts:
    order_prompts: "\n Return only the sequence of actions as the example above, nothing more.\n"
 
 actions:
+  {pickup: "pick up {}",
+   putdown: "put down {}",
+   stack: "stack {} on top of {}",
+   unstack: "unstack {} from on top of {}"}
+
+actions_:
   {pickup: "pick up the {}",
    putdown: "put down the {}",
    stack: "stack the {} on top of the {}",

@@ -4,6 +4,7 @@ import numpy as np
 import json
 import random
 
+
 def json_to_df(json_file: str) -> pd.DataFrame:
     with open(json_file) as f:
         data = json.load(f)
@@ -91,6 +92,7 @@ def all_possible_actions(actions_possible: str):
     if "0" in actions_possible:
         return False
     return True
+
 
 def pre_proc_df(df: pd.DataFrame) -> pd.DataFrame:
     df["all_possible_actions"] = df["actions_possible"].apply(all_possible_actions)
@@ -180,23 +182,38 @@ def get_analysis_from_folder(folder_path: str, ground_truth_df: pd.DataFrame):
     return df_list
 
 
+CSV_types = [
+    "only_prompt_b",
+    "only_prompt_iterative_b",
+    "iterative_actions_b",
+    "chat_b",
+    "chat_with_possible_actions_b",
+    "chat_random_choice_b",
+    "chat_with_possible_actions_feedback_b",
+    "chat_with_possible_actions_dist_1_b",
+    "chat_with_possible_actions_dist_1_random_b",
+]
+
+
 def method_number_to_name(method_number: int) -> str:
     if method_number == 0:
-        return "Full Prompt"
+        return "Full Plan Prompt"
     if method_number == 1:
-        return "Iterative Actions"
+        return "Validation Full Plan Prompt"
     if method_number == 2:
-        return "Validation Full Prompt"
+        return "Iterative Actions"
     if method_number == 3:
         return "Validation Iterative Actions"
     if method_number == 4:
         return "Possible Actions"
     if method_number == 5:
-        return "Random Choice"
+        return "Possible Actions Random"
     if method_number == 6:
-        return "Possible Actions Loop"
+        return "Possible Actions Loop Feedback"
     if method_number == 7:
-        return "Possible Actions Feedback"
+        return "Possible Actions Depth-1"
+    if method_number == 8:
+        return "Possible Actions Depth-1 Random"
 
 
 def get_balanced_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -226,8 +243,20 @@ def get_n_few_shot_actions(content: str) -> int:
     actions = content.split("[PLAN]")[1].split("[PLAN END]")[0].split("\n")
     return len(actions) - 2
 
+
 def get_df_from_folder(folder_path):
-    csv_types = ["only_prompt_b", "iterative_actions_b", "only_prompt_iterative_b", "chat_b", "chat_with_possible_actions_b", "chat_random_choice_b", "chat_with_possible_actions_loop_b", "chat_with_possible_actions_feedback_b"]
+    csv_types = [
+        "only_prompt_b",
+        "iterative_actions_b",
+        "only_prompt_iterative_b",
+        "chat_b",
+        "chat_with_possible_actions_b",
+        "chat_random_choice_b",
+        "chat_with_possible_actions_loop_b",
+        "chat_with_possible_actions_feedback_b",
+        "chat_with_possible_actions_dist_1_random_b",
+    ]
+    csv_types = CSV_types
     folder_path = Path(folder_path)
     csv_files = folder_path.glob("*.csv")
     df_concat = pd.DataFrame([])
@@ -246,3 +275,7 @@ def get_df_from_folder(folder_path):
     df = df_concat
     df["method_name"] = df["method"].apply(method_number_to_name)
     return df
+
+
+def iterations_count_from_validation_full_prompt(content: str) -> int:
+    return content.count("Write only:")

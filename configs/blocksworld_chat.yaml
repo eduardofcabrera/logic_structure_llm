@@ -97,10 +97,10 @@ prompts:
          first_prompt: "\nReturn the next action to achieve my goal. Return one, and only one, action, without nothing more.\nWrite only with:\n```THE NEXT BEST ACTION IS: <action>.```" #"Return the first action I need to take to achieve my goal. Return one, and only one, action, without nothing more.\n"
 
 actions:
-  {pickup: "pick up the {}",
-   putdown: "put down the {}",
-   stack: "stack the {} on top of the {}",
-   unstack: "unstack the {} from on top of the {}"}
+  {pickup: "pick up {}",
+   putdown: "put down {}",
+   stack: "stack {} on top of {}",
+   unstack: "unstack {} from on top of {}"}
 
 
 predicates:

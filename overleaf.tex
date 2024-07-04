@@ -1,0 +1,244 @@
+\begin{table}[h]
+    \caption{Caption} \label{tab:general_results_2}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           \begin{tabular}{P{4cm}P{1cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                          & \multicolumn{1}{c}{} & \multicolumn{3}{c}{Accuracy(\%)} & \multicolumn{3}{c}{Valid Plan (\%)}  \\ 
+                                                 &                      & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{2}{*}{Full Prompt}                  & 5-10 & 7.2  & 2.9 & 0.78 & 13.7 & 15.5 & 12.9  \\
+                                                 & 8-16 & 7.2  & 2.9 & 0.78 & 13.7 & 15.5 & 12.9 \\ \hline
+   \multirow{2}{*}{Validation Full Prompt}       & 5-10 & 12.2 & 6.1 & 2.4 & 14.1  & 25.6 & 11.6 \\
+                                                 & 8-16 & 12.9 & 6.4 & 2.4 & 14.6  & 25.3 & 19.7 \\ \hline
+   \multirow{2}{*}{Iterative Actions}            & 5-10 & 1.7  & 9.1 & 11.1 & 17.8 & 24.7 & 21.2 \\
+                                                 & 8-16 & 1.8  & 9.1 & 11.1 & 17.7 & 24.7 & 21.1 \\ \hline
+   \multirow{2}{*}{Validation Iterative Actions} & 5-10 & 35.4 & 23.2 & 18.1 &  100.0 & 100.0 & 100.0 \\
+                                                 & 8-16 & 44.4 & 33.5 & 21.9 &  100.0 & 100.0 & 100.0 \\ \hline
+   \multirow{2}{*}{Iterative Possible Actions}   & 5-10 & 47.7 & 25.7 & 17.3 &  100.0 & 100.0 & 100.0 \\
+                                                 & 8-16 & 50.5 & 27.2 & 17.7 &  100.0 & 100.0 & 100.0 \\ \hline \hline
+   \multicolumn{1}{c}{}                          & \multicolumn{1}{c}{} & \multicolumn{3}{c}{Optimal Plan(\%)} & \multicolumn{3}{c}{Plan Length (\# Actions)}  \\ 
+                                                 &                      & GPT-4o & Mixtral & Llama3 & GPT-4o & Mixtral & Llama3 \\ \hline
+   \multirow{2}{*}{Full Prompt}                  & 5-10 & 100.0 & 63.3 & 83.3 & 6.6  & 6.4 & 5.6  \\
+                                                 & 8-16 & 100.0 & 63.3 & 83.3 & 6.6  & 6.4 & 5.6 \\ \hline
+   \multirow{2}{*}{Validation Full Prompt}       & 5-10 & 86.2  & 40.4 & 22.2 & 7.9  & 7.5 & 7.4 \\
+                                                 & 8-16 & 85.9  & 38.8 & 22.2 & 9.6  & 8.0 & 5.7 \\ \hline
+   \multirow{2}{*}{Iterative Actions}            & 5-10 & 76.9  & 85.7 & 62.4 & 7.7  & 6.5 & 5.5 \\
+                                                 & 8-16 & 78.6  & 85.7 & 62.4 & 11.5 & 6.5 & 5.6 \\ \hline
+   \multirow{2}{*}{Validation Iterative Actions} & 5-10 & 74.3  & 43.4 & 65.5 & 8.5  & 9.2 & 8.9 \\
+                                                 & 8-16 & 73.6  & 40.1 & 58.3 & 12.1 & 13.5& 13.8 \\ \hline
+   \multirow{2}{*}{Iterative Possible Actions}   & 5-10 & 79.8  & 77.7 & 50.4 & 7.6  & 8.4 & 8.8 \\
+                                                 & 8-16 & 75.8  & 73.2 & 49.3 & 10.6 & 12.8& 13.6 \\
+   
+           \end{tabular}
+       \end{adjustbox}
+           %\vspace{3mm}
+   \end{table}
+
+   \begin{table}[h]
+    \caption{Caption} \label{tab:general_results}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           \begin{tabular}{P{4cm}P{1cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline
+   \multicolumn{1}{c}{}                          & \multicolumn{1}{c}{} & \multicolumn{3}{c}{Accuracy(\%)} & \multicolumn{3}{c}{Valid Plan (\%)} & \multicolumn{3}{c}{Optimal Plan (\%)} \\ \
+                                                 &                      & GPT-4o    & Mixtral   & Llama3   & GPT-4o     & Mixtral    & Llama3    & GPT-4o     & Mixtral     & Llama3     \\ \hline
+   \multirow{2}{*}{Full Prompt}  & 5-10 & 7.2 & 0.78 & 2.9 & 13.7 & 12.9 & 15.5 & 100.0 & 83.3 & 63.3 \\
+                                                 & 8-16 & 7.2 & 0.78 & 2.9 & 13.7 & 12.9 & 15.5 & 100.0 & 83.3 & 63.3 \\ \hline
+   \multirow{2}{*}{Validation Full Prompt}       & 5-10 & 12.2 & 2.4 & 6.1 & 14.1 & 11.6 & 25.6 & 86.2 & 22.2 &  40.4 \\
+                                                 & 8-16 & 12.9 & 2.4 & 6.4 & 14.6 & 19.7 & 25.3 & 85.9 & 22.2 &  38.8 \\ \hline
+   \multirow{2}{*}{Iterative Actions}            & 5-10 & 1.7 & 11.1 & 9.1 & 17.8 & 21.2 & 24.7 & 76.9 & 62.4 & 85.7 \\
+                                                 & 8-16 & 1.8 & 11.1 & 9.1 & 17.7 & 21.1 & 24.7 & 78.6 & 62.4 & 85.7 \\ \hline
+   \multirow{2}{*}{Validation Iterative Actions} & 5-10 & 35.4 & 18.1 & 23.2 & 100.0 & 100.0 & 100.0 & 74.3 & 65.5 & 43.4 \\
+                                                 & 8-16 & 44.4 & 21.9 & 33.5 & 100.0 & 100.0 & 100.0 & 73.6 & 58.3 & 40.1 \\ \hline
+   \multirow{2}{*}{Iterative Possible Actions}   & 5-10 & 47.7 & 17.3 & 25.7 & 100.0 & 100.0 & 100.0 & 79.8 & 50.4 & 77.7 \\
+                                                 & 8-16 & 50.5 & 17.7  & 27.2 & 100.0 & 100.0 & 100.0 & 75.8 & 49.3 & 73.2 \\ \hline  
+           \end{tabular}
+       \end{adjustbox}
+           %\vspace{3mm}
+   \end{table}
+   
+   \begin{table}[h]
+    \caption{Caption} \label{tab:general_results_2}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           \begin{tabular}{P{4cm}P{1cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                          & \multicolumn{1}{c}{} & \multicolumn{3}{c}{Accuracy(\%)} & \multicolumn{3}{c}{Valid Plan (\%)}  \\ 
+                                                 &                      & GPT-4o & Mixtral & Llama3 & GPT-4o & Mixtral & Llama3 \\ \hline
+   \multirow{2}{*}{Full Prompt}  & 5-10 & 7.2 & 0.78 & 2.9 & 13.7 & 12.9 & 15.5  \\
+                                                 & 8-16 & 7.2 & 0.78 & 2.9 & 13.7 & 12.9 & 15.5 \\ \hline
+   \multirow{2}{*}{Validation Full Prompt}       & 5-10 & 12.2 & 2.4 & 6.1 & 14.1 & 11.6 & 25.6 \\
+                                                 & 8-16 & 12.9 & 2.4 & 6.4 & 14.6 & 19.7 & 25.3 \\ \hline
+   \multirow{2}{*}{Iterative Actions}            & 5-10 & 1.7 & 11.1 & 9.1 & 17.8 & 21.2 & 24.7 \\
+                                                 & 8-16 & 1.8 & 11.1 & 9.1 & 17.7 & 21.1 & 24.7 \\ \hline
+   \multirow{2}{*}{Validation Iterative Actions} & 5-10 & 35.4 & 18.1 & 23.2 & 100.0 & 100.0 & 100.0 \\
+                                                 & 8-16 & 44.4 & 21.9 & 33.5 & 100.0 & 100.0 & 100.0 \\ \hline
+   \multirow{2}{*}{Iterative Possible Actions}   & 5-10 & 47.7 & 17.3 & 25.7 & 100.0 & 100.0 & 100.0 \\
+                                                 & 8-16 & 50.5 & 17.7  & 27.2 & 100.0 & 100.0 & 100.0 \\ \hline \hline
+   \multicolumn{1}{c}{}                          & \multicolumn{1}{c}{} & \multicolumn{3}{c}{Optimal Plan(\%)} & \multicolumn{3}{c}{Plan Length (\# Actions)}  \\ 
+                                                 &                      & GPT-4o & Mixtral & Llama3 & GPT-4o & Mixtral & Llama3 \\ \hline
+   \multirow{2}{*}{Full Prompt}  & 5-10 & 100.0 & 83.3 & 63.3 & 6.6 & 5.6 & 6.4  \\
+                                                 & 8-16 & 100.0 & 83.3 & 63.3 & 6.6 & 5.6 & 6.4 \\ \hline
+   \multirow{2}{*}{Validation Full Prompt}       & 5-10 & 86.2 & 22.2 & 40.4 & 7.9 & 7.4 & 7.5 \\
+                                                 & 8-16 & 85.9 & 22.2 & 38.8 & 9.6 & 5.7 & 8.0 \\ \hline
+   \multirow{2}{*}{Iterative Actions}            & 5-10 & 76.9 & 62.4 & 85.7 & 7.7 & 5.5 & 6.5 \\
+                                                 & 8-16 & 78.6 & 62.4 & 85.7 & 11.5 & 5.6 & 6.5 \\ \hline
+   \multirow{2}{*}{Validation Iterative Actions} & 5-10 & 74.3 & 65.5 & 43.4 & 8.5 & 8.9 & 9.2 \\
+                                                 & 8-16 & 73.6 & 58.3 & 40.1 & 12.1 & 13.8 & 13.5 \\ \hline
+   \multirow{2}{*}{Iterative Possible Actions}   & 5-10 & 79.8 & 50.4 & 77.7 & 7.6 & 8.8 & 8.4 \\
+                                                 & 8-16 & 75.8 & 49.3  & 73.2 & 10.6 & 13.6 & 12.8 \\
+   
+           \end{tabular}
+       \end{adjustbox}
+           %\vspace{3mm}
+   \end{table}
+
+   \begin{table}[h]
+    \caption{Table \ref{tab:general_results} presents the numerical results for all methods and models. The metrics include Accuracy percentage, Valid Plan percentage, and Plan Length, which are calculated based on all generated plans. The Optimal Plan Percentage is calculated only for the successful plans. These results represent the average values across the entire dataset. The results are divided by experiment sets with fewer iterations (5-8) and more iterations (10-16), as described in Section \ref{sec:experiments}.} \label{tab:general_results}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           \begin{tabular}{P{4cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Accuracy(\%)} & \multicolumn{3}{c}{Valid Plan (\%)}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation}  & 7.2  & 2.9 & 0.78 & 13.7 & 15.5 & 12.9 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated} & 12.9 & 6.4 & 2.4 & 14.6  & 25.3 & 19.7 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT} & 53.4 & 7.9 & 4.2 & 57.8  & 17.4 & 6.3 \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 1.8  & 9.1 & 11.1 & 17.7 & 24.7 & 21.1 \\ \hline
+   \multirow{1}{*}{Interactive - Validated} & 44.4 & 33.5 & 21.9 &  100.0 & 100.0 & 100.0 \\ \hline
+   \multirow{1}{*}{Interactive - CoT Validated} & 56.6 & 2.5 & 1.1 &  100.0 & 100.0 & 100.0 \\ \hline
+   \multirow{1}{*}{Interactive - Restricted} & 50.5 & 27.2 & 17.7 &  100.0 & 100.0 & 100.0 \\ \hline \hline
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Optimal Plan(\%)} & \multicolumn{3}{c}{Plan Length (\# Actions)}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation} & 100.0 & 63.3 & 83.3 & 6.6  & 6.4 & 5.6 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated} & 85.9  & 38.8 & 22.2 & 9.6  & 8.0 & 5.7 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT} & 81.5 & 32.8 & 53.1 & 7.2  & 6.7 & 6.5 \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 78.6  & 85.7 & 62.4 & 11.5 & 6.5 & 5.6 \\ \hline
+   \multirow{1}{*}{Interactive - Validated} & 73.6 & 40.1 & 58.3 & 12.1 & 13.5& 13.8 \\ \hline
+    \multirow{1}{*}{Interactive - CoT Validated} & 34.6 & 14.3 & 9.1 & 10.8 & 15.7 & 15.9 \\ \hline
+   \multirow{1}{*}{Interactive - Restricted} & 75.8  & 73.2 & 49.3 & 10.6 & 12.8& 13.6 \\
+   
+           \end{tabular}
+       \end{adjustbox}
+           %\vspace{3mm}
+\end{table}
+
+\begin{table}[h]
+    \caption{Table \ref{tab:general_results} presents the numerical results for all methods and models. The metrics include Accuracy percentage, Valid Plan percentage, and Plan Length, which are calculated based on all generated plans. The Optimal Plan Percentage is calculated only for the successful plans. These results represent the average values across the entire dataset. The results are divided by experiment sets with fewer iterations (5-8) and more iterations (10-16), as described in Section \ref{sec:experiments}.} \label{tab:general_results}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           \begin{tabular}{P{4cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Accuracy(\%)} & \multicolumn{3}{c}{Optimal Plan (\%)}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation}  & 7.2  & 2.9  & 0.78 & 100.0 & 63.3 & 83.3 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated}      & 12.9 & 6.4  & 2.4  & 85.9  & 38.8 & 22.2 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT}            & 53.4 & 7.9  & 4.2  & 81.5 & 32.8 & 53.1 \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 1.8  & 9.1  & 11.1 & 78.6  & 85.7 & 62.4 \\ \hline
+   \multirow{1}{*}{Interactive - Validated}     & 44.4 & 33.5 & 21.9 & 73.6 & 40.1 & 58.3  \\ \hline
+   \multirow{1}{*}{Interactive - CoT Validated} & 56.6 & 2.5  & 1.1  & 34.6 & 14.3 & 9.1  \\ \hline
+   \multirow{1}{*}{Interactive - Restricted}    & 50.5 & 27.2 & 17.7 & 75.8  & 73.2 & 49.3 \\ \hline \hline
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Optimal Plan(\%)} & \multicolumn{3}{c}{Plan Length (\# Actions)}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation}  & 100.0 & 63.3 & 83.3 & 6.6  & 6.4 & 5.6 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated}      & 85.9  & 38.8 & 22.2 & 9.6  & 8.0 & 5.7 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT}            & 81.5 & 32.8 & 53.1  & 7.2  & 6.7 & 6.5 \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 78.6  & 85.7 & 62.4 & 11.5 & 6.5 & 5.6 \\ \hline
+   \multirow{1}{*}{Interactive - Validated}     & 73.6 & 40.1 & 58.3  & 12.1 & 13.5& 13.8 \\ \hline
+    \multirow{1}{*}{Interactive - CoT Validated}& 34.6 & 14.3 & 9.1   & 10.8 & 15.7 & 15.9 \\ \hline
+   \multirow{1}{*}{Interactive - Restricted}    & 75.8  & 73.2 & 49.3 & 10.6 & 12.8& 13.6 \\
+   
+           \end{tabular}
+       \end{adjustbox}
+           %\vspace{3mm}
+\end{table}
+
+\begin{table}[h]
+    \caption{Table \ref{tab:general_results} presents the numerical results for all methods and models. The metrics include Accuracy percentage, Valid Plan percentage, and Plan Length, which are calculated based on all generated plans. The Optimal Plan Percentage is calculated only for the successful plans. These results represent the average values across the entire dataset. The results are divided by experiment sets with fewer iterations (5-8) and more iterations (10-16), as described in Section \ref{sec:experiments}.} \label{tab:general_results}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           \begin{tabular}{P{4cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Valid Plan (\%)}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation}  & 13.7 & 15.5 & 12.9 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated} & 14.6  & 25.3 & 19.7 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT} & 57.8  & 17.4 & 6.3 \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 17.7 & 24.7 & 21.1 \\ \hline
+   \multirow{1}{*}{Interactive - Validated} &  100.0 & 100.0 & 100.0 \\ \hline
+   \multirow{1}{*}{Interactive - CoT Validated} &  100.0 & 100.0 & 100.0 \\ \hline
+   \multirow{1}{*}{Interactive - Restricted} &  100.0 & 100.0 & 100.0 \\ \hline \hline
+           \end{tabular}
+       \end{adjustbox}
+           %\vspace{3mm}
+\end{table}
+
+\begin{table}[htb]
+    \caption{Numerical results for all methods and models. The metrics include accuracy percentage, number of tokens processed, and relative plan length, calculated based on all generated plans. The optimal plan percentage is calculated only for the successful plans. These results represent the average values across the entire dataset.} \label{tab:general_results}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           {\renewcommand{\arraystretch}{1.4}% for the vertical padding
+           \begin{tabular}{P{4cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Accuracy(\%) $\uparrow$} & \multicolumn{3}{c}{Optimal Plan (\%) $\uparrow$}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - NV - Std}  & 7.2  & 2.9  & 0.78 & 100.0 & 63.3 & 83.3 \\ \hline
+   \multirow{1}{*}{Preplanned - NV - CoT}            & 53.4 & 7.9  & 4.2  & 81.5 & 32.8 & 53.1  \\ \hline
+   \multirow{1}{*}{Preplanned - Validated - Std}      & 12.9 & 6.4  & 2.4  & 85.9  & 38.8 & 22.2 \\ \hline
+   \multirow{1}{*}{Interactive - NV - Std} & 1.8  & 9.1  & 11.1 & 78.6  & 85.7 & 62.4 \\ \hline
+   \multirow{1}{*}{Interactive - Validated - Std}     & 44.4 & {\bf 33.5} & {\bf 21.9} & 73.6 & 40.1 & 58.3  \\ \hline
+   \multirow{1}{*}{Interactive - Validated - CoT} & {\bf 56.6} & 2.5  & 1.1  & 34.6 & 14.3 & 9.1   \\ \hline
+   \multirow{1}{*}{Interactive - Restricted - Std}    & 50.5 & 27.2 & 17.7 & 75.8  & 73.2 & 49.3 \\ \hline \hline
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Tokens (thousands) $\downarrow$} & \multicolumn{3}{c}{Relative Plan Length $\downarrow$}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - NV - Std}  & 0.55 & 0.56 & 0.56 & 1.1  & 1.1 & 1.1 \\ \hline
+   \multirow{1}{*}{Preplanned - NV - CoT}            & 1.5 & 1.5 & 1.5  & 1.2  & 1.4 & 1.3 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated - Std}      & 4.8  & 5.1 & 5.4 & 1.5  & 1.4 & 1.1 \\ \hline
+   \multirow{1}{*}{Interactive - NV - Std} & 10.4  & 4.4 & 3.9 & 2.1 & 1.2 & 1.0 \\ \hline
+   \multirow{1}{*}{Interactive - Validated - Std}     & 10.9 & 12.5 & 13.8  & 2.2 & 2.4 & 2.4 \\ \hline
+    \multirow{1}{*}{Interactive - Validated - CoT}& 46.5 & 57.2 & 60.2   & 1.7 & 3.2 & 3.1 \\ \hline
+   \multirow{1}{*}{Interactive - Restricted - Std}    & 16.7  & 21.0 & 22.7 & 1.5 & 2.0 & 2.4 \\
+   
+           \end{tabular}}
+       \end{adjustbox}
+           %\vspace{3mm}
+\end{table}
+
+\begin{table}[htb]
+    \caption{Numerical results for all methods and models. The metrics include accuracy percentage, number of tokens processed, and relative plan length, calculated based on all generated plans. The optimal plan percentage is calculated only for the successful plans. These results represent the average values across the entire dataset.} \label{tab:general_results}
+       \begin{adjustbox}{max width = \textwidth, center}
+           \small
+           \centering
+           {\renewcommand{\arraystretch}{1.4}% for the vertical padding
+           \begin{tabular}{P{4cm}|P{1.5cm}P{1.5cm}P{1.5cm}|P{1.5cm}P{1.5cm}P{1.5cm}}
+               \hline 
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Accuracy(\%) $\uparrow$} & \multicolumn{3}{c}{Optimal Plan (\%) $\uparrow$}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation}  & 7.2  & 2.9  & 0.78 & 100.0 & 63.3 & 83.3 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated}      & 12.9 & 6.4  & 2.4  & 85.9  & 38.8 & 22.2 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT}            & 53.4 & 7.9  & 4.2  & 81.5 & 32.8 & 53.1  \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 1.8  & 9.1  & 11.1 & 78.6  & 85.7 & 62.4 \\ \hline
+   \multirow{1}{*}{Interactive - Validated}     & 44.4 & {\bf 33.5} & {\bf 21.9} & 73.6 & 40.1 & 58.3  \\ \hline
+   \multirow{1}{*}{Interactive - CoT Validated} & {\bf 56.6} & 2.5  & 1.1  & 34.6 & 14.3 & 9.1   \\ \hline
+   \multirow{1}{*}{Interactive - Restricted}    & 50.5 & 27.2 & 17.7 & 75.8  & 73.2 & 49.3 \\ \hline \hline
+   \multicolumn{1}{c}{}                           & \multicolumn{3}{c}{Tokens (thousands) $\downarrow$} & \multicolumn{3}{c}{Relative Plan Length $\downarrow$}  \\ 
+                                                 & GPT-4o & Llama3 & Mixtral & GPT-4o & Llama3 & Mixtral \\ \hline
+   \multirow{1}{*}{Preplanned - No validation}  & 0.55 & 0.56 & 0.56 & 1.1  & 1.1 & 1.1 \\ \hline
+   \multirow{1}{*}{Preplanned - Validated}      & 4.8  & 5.1 & 5.4 & 1.5  & 1.4 & 1.1 \\ \hline
+   \multirow{1}{*}{Preplanned - CoT}            & 1.5 & 1.5 & 1.5  & 1.2  & 1.4 & 1.3 \\ \hline
+   \multirow{1}{*}{Interactive - No validation} & 10.4  & 4.4 & 3.9 & 2.1 & 1.2 & 1.0 \\ \hline
+   \multirow{1}{*}{Interactive - Validated}     & 10.9 & 12.5 & 13.8  & 2.2 & 2.4 & 2.4 \\ \hline
+    \multirow{1}{*}{Interactive - CoT Validated}& 46.5 & 57.2 & 60.2   & 1.7 & 3.2 & 3.1 \\ \hline
+   \multirow{1}{*}{Interactive - Restricted}    & 16.7  & 21.0 & 22.7 & 1.5 & 2.0 & 2.4 \\
+   
+           \end{tabular}}
+       \end{adjustbox}
+           %\vspace{3mm}
+\end{table} 

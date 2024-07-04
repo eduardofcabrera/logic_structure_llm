@@ -3,3 +3,7 @@
 env/
 experiments_results/
 data/
+*.out
+*.log
+.tex
+metrics_results/
